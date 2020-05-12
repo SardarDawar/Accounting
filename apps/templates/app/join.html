@@ -1,0 +1,160 @@
+{% extends 'Base.html' %}
+{% load humanize FindSubUser findNextMonth findNextYear findFindSubID findSubStatus FindSubObject %}
+{% block title %} Join a Plan {% endblock %}
+
+
+{% block content %}
+
+{% include "music/contactModelForm.html" with plan=plan %}
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal_1" tabindex="-1" role="dialog" aria-labelledby="exampleModal_1Label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModal_1Label">Register/Login</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        To add/join a plan, user should have to register/login.
+      </div>
+      <div class="modal-footer">
+        <a type="button" class="btn btn-primary" href="{% url 'register' %}?next={% url 'Join' plan.category.id plan.id %}">Register</a>
+        <a type="button" class="btn btn-primary" href="{% url 'login' %}/?next={% url 'Join' plan.category.id plan.id %}">Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% include 'app/FeedbackForms.html' with edit=False subs=request.user|FindSubObject:plan.id   %}
+
+
+
+
+
+<div class="mx-auto" style="width:1200px;">
+  <div class="col">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card mt-5 mb-5 " style="width:38rem; " id="remainTop"> 
+          <div class="card-body">
+              <p class="card-text font-weight-normal">Family Live Since : {{ plan.created }}</p>
+              <p class="card-title font-weight-bold" id="payment" style="font-size: 20px;" data="{{ plan.currently_monthly_payment_per_line }}">${{ plan.currently_monthly_payment_per_line|intcomma }}</p>
+              {% if plan.linkWeb %}
+                  <p class="card-text">Please visit : <a href="{{ plan.linkWeb }}">{{ plan.linkWeb }}</a> for full details</p>
+              {% endif %}
+            
+  
+         
+  
+          <div class="col mb-2">
+              <div class="row mb-2">
+                  <div class="col">
+                      <button type="button" class="btn btn-outline-secondary wr-200" style="width:250px !important;">Current Family Size : {{ plan.total_slots }}</button>
+                  </div>
+                  <div class="col">
+                      <button type="button" class="btn btn-outline-secondary wr-200" style="width:250px !important;">Open Slots: {{ total }} </button>
+                  </div>
+              </div>
+              
+              
+              <div class="row">
+                  <div class="col">
+                      <button type="button" class="btn btn-outline-secondary wr-200" style="width:250px !important;">Payment Date: {{ request.user|findNextMonth }} {{ plan.monthly_payment_date }}, {{ request.user|findNextYear }} </button>
+                  </div>
+                  <div class="col">
+                      <a type="button" class="btn btn-outline-secondary wr-200" href="{% url  'contact' %}" style="width:250px !important;" data-toggle="modal" data-target="#exampleModalContact">Contact Support</a>
+                  </div>
+              </div>
+              
+              
+          </div>
+  
+                
+                    <div class="form-group">
+                      <label for="exampleForm" class="font-weight-bold">Ratings</label>
+                      <p class="card-text">
+                          Rating  :   Family Rating 5/5. No Issues. One Time Payment
+                      </p>
+                      
+                    </div>
+  
+                      {% if plan.notes %}
+                    <div class="form-group">
+                      <label for="exampleForm" class="font-weight-bold">Additionnal Notes</label>
+                      <p class="card-text">
+                          {{ plan.notes }}
+                      </p>
+                      
+                    </div>
+                    {% endif %}
+  
+  
+                    {% if plan.get_contact %}
+                      {% if plan.user == request.user %}
+                        <div class="form-group">
+                          <label for="exampleForm" class="font-weight-bold">Contact Owner</label>
+                          <p class="card-text">
+                              {{ plan.get_contact }}
+                          </p>  
+                        </div>
+                      {% else %}
+                        {% if request.user|FindSubUser:plan.id %}
+                        
+                          <div class="form-group">
+                            <label for="exampleForm" class="font-weight-bold">Contact Owner</label>
+                            <p class="card-text">
+                              {% if request.user|findSubStatus:plan.id == "Active" %}
+                                {{ plan.get_contact }}
+                              {% else %}
+                                Revealed after Account Owner Approved your Subscription.
+                              {% endif %}
+                            </p>                      
+                          </div>
+                        {% else %}
+                          <div class="form-group">
+                            <label for="exampleForm" class="font-weight-bold">Contact Owner</label>
+                            <p class="card-text">
+                                Revealed when you joined in.
+                            </p>                      
+                          </div>
+                        {% endif %}
+                          
+                      {% endif %}
+                    
+                    {% endif %}
+  
+                    {% if plan.user == request.user %}
+                      <div class="form-group">
+                        <a  class="btn btn-danger" type="button" href="{% url 'planeditform' plan.id %}">Edit Plan Details</a>
+                      </div>
+                    {% endif %}
+                    {% include "app/members_col.html" with plan=plan %}
+                    {% if plan.user != request.user %}
+                      {% include "app/device-campatibility.html" with plan=plan %}
+                    {% endif %}
+              
+          </div>
+
+        
+      </div>
+      </div>
+      <div class="col-lg-5 mb-5">
+        <div class="row ml-2">
+          {% include 'app/join_subscription_col.html' %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+    
+</div>
+
+
+
+{% endblock %}
+

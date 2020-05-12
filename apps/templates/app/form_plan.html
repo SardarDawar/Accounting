@@ -1,0 +1,122 @@
+{% extends 'Base.html' %}
+{% block content %}
+
+<div class="row mr-0">
+    <div class="col">
+        {% include 'music/side_bar.html' %}
+    </div>
+    <div class="col">
+        <div class="mx-auto" style="width: 1000px;">
+        
+        
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="card mb-5 mt-5" style=" width:45rem;">
+
+
+            <div class="shadow p-3 bg-white rounded">
+
+                <div class="card-header text-center bg-transparent border-0">
+                    <h3>
+                        Plan
+                    </h3>
+
+                </div>
+                <div class="card-body">
+
+                    {% if form.errors %}
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <h5 class="alert-heading">{{ field.label }}</h5>
+                        <hr>
+                        <p class="mb-0">{{ error|escape }}</p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endfor %}
+                    {% endif %}
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Category</label>
+                                {{  form.category }}
+                            </div>
+                            <div class="form-group">
+                                <label>Plan Name</label>
+                                <input type="text" name="plan_name" maxlength="150" class="form-control" required="" {% if form.plan_name.value %}value="{{ form.plan_name.value }}"{% endif %}>
+                            </div>
+
+                            
+                            <div class="form-group">
+                                <label>Family Name</label>
+                                <input type="text" name="family_name" maxlength="150" class="form-control" required="" {% if form.family_name.value %}value="{{ form.family_name.value }}"{% endif %}>
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-5">
+
+                            <div class="form-group">
+                                <label>Total Available Slots</label>
+                                {{ form.total_slots }}
+                                    
+                            </div>
+                            <div class="form-group">
+                                <label>Monthly Payment Date</label>
+                                <div class="input-group date" data-provide="datepicker" data-date-format="dd">
+                                <input type="text" name="monthly_payment_date" maxlength="150" class="form-control" {% if form.monthly_payment_date.value %}value="{{ form.monthly_payment_date.value }}"{% endif %}
+                                    required="">
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-th"></span>
+                                    </div>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+                                <label>Current Monthly Payment Per line</label>
+                                <input type="number" name="currently_monthly_payment_per_line" maxlength="150" {% if form.currently_monthly_payment_per_line.value %}value="{{ form.currently_monthly_payment_per_line.value }}"{% endif %}
+                                    class="form-control" required="">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Plan Link</label>
+                                <input type="text" name="linkWeb"  {% if form.linkWeb.value %}value="{{ form.linkWeb.value }}"{% endif %}
+                                    maxlength="150" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1">Additional Notes (Number of characters : <span id="CharactersCounter"></span>/500)</label>
+                                <textarea maxlength="500" class="form-control" id="exampleFormControlTextarea1" rows="3" onkeyup="countChar(this)"
+                                    name="notes">{% if form.linkWeb.value %}{{ form.notes.value }}{% endif %}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                        <input type="submit" class="btn btn-primary mt-2" value="Save">
+
+                        <a type="button" class="btn btn-danger mt-2" href="{% url 'planform' %}">Cancel</a>
+
+                </div>
+            </div>
+        </div>
+    
+
+
+
+
+</form>
+        </div>
+
+    </div>
+
+</div>
+
+ 
+{% endblock %}

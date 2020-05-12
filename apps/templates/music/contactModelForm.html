@@ -1,0 +1,87 @@
+{% load static %}
+
+
+
+<div class="modal fade" id="exampleModalsuccessfull" tabindex="-1" role="dialog" aria-labelledby="exampleModalsuccessfullLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalsuccessfullLabel">Thank You</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          We will contact you back as soon as possible.
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalContact" tabindex="-1" role="dialog" aria-labelledby="exampleModalContactLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalContactLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+       
+    
+            <div class="contact-form">
+                <h4>Get In Touch</h4>
+                
+                <form action="{% url 'contact' %}?next={% url 'Join' plan.category.id plan.id %}" method="post">
+                    {% csrf_token %}
+
+                    
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                             
+                                <input type="text" name="userName" placeholder="First Name" required id="id_userName" class="form-control text-dark" {% if request.user.is_authenticated %} value="{{ request.user.first_name }}" {% endif %} >
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <input type="text" name="email" placeholder="Email" required id="id_email" class="form-control text-dark" {% if request.user.is_authenticated %} value="{{ request.user.email }}" {% endif %}>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <textarea name="body" class="form-control text-dark" cols="30" rows="10" placeholder="Message" required id="id_body"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <button type="button" class="btn btn-danger w-100" data-dismiss="modal">Close</button>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button class="btn btn-primary w-100" type="submit">Send</button>
+                                </div>
+
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+        
+      </div>
+    </div>
+  </div>
+

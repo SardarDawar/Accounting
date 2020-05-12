@@ -1,0 +1,202 @@
+{% extends "Base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<h2>Frequently Asked Questions
+</h2> 
+
+
+<div class="accordion p-3" id="accordionExample">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h2 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          What is Circledin?
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+        Circledin is a community of users with a common interest of saving money. 
+We understand that by joining a family or friends plan can cut mobile cost by 50%. We help individual users connect to group plan to get the group discounted price.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          How does it work?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+      <div class="card-body">
+        A host, person who currently owns a mobile plan, that has an available slot/mobile line on their mobile plan. They can post their avaliable mobile line onto Circledin. <p>A user, person who is looking for a mobile line, can join that mobile plan without having to pay the individual price. </p> <p> Cirlcedin connects the host and the user together. We will manage the payment and communication. </p> <p><a href="{% url 'contact' %}"> For more information Click Here or contact us. </a>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          How are the price set?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+      <div class="card-body">
+        We ensure that pricing is fairly set. <p> i.e. If a plan has 5 lines paying $150 per month, each line should cost $30 per line per month.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingFour">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          Will I lose my current mobile number?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+      <div class="card-body">
+        No, you will be able to keep your current number.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingFive">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+          Can I get a new mobile number?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
+      <div class="card-body">
+        Yes, we will provide a new mobile number.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingSix">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+          Will my phone work?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordionExample">
+      <div class="card-body">
+        Please check before switching over. If your phone is unlocked, it should work.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingSeven">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+          How are payments handled?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseSeven" class="collapse" aria-labelledby="headingSeven" data-parent="#accordionExample">
+      <div class="card-body">
+        Circledin makes payment automatic and easy. When you are ready to reserved a line, you will input your payment information on our secure website. Circledin uses Stripe, is a PCI Service Provider Level 1 which is the highest grade of payment processing securit.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingEight">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+          Can a host cancel my mobile service?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseEight" class="collapse" aria-labelledby="headingEight" data-parent="#accordionExample">
+      <div class="card-body">
+        It is not in the best interest of our host to cancel a mobile line service. We will work with each host and get you transfer over to another plan with same cost and same service.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingNine">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+          How can I trust that the services you provide are legit?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseNine" class="collapse" aria-labelledby="headingNine" data-parent="#accordionExample">
+      <div class="card-body">
+        We verify with each host that their mobile plan is 100% correct.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTen">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+          What makes Circledin different than other mobile carriers?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseTen" class="collapse" aria-labelledby="headingTen" data-parent="#accordionExample">
+      <div class="card-body">
+        Circledin is <b>NOT</b> a mobile carrier or reseller. We are understand that mobile cost can be reduce by grouping together. Group together save together. We want to provide a community where all user can reduce cost.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingEleventh">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseEleventh" aria-expanded="false" aria-controls="collapseEleventh">
+          Can I upgrade my phone?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseEleventh" class="collapse" aria-labelledby="headingEleventh" data-parent="#accordionExample">
+      <div class="card-body">
+        No, we currently do not have that option.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwelveth">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwelveth" aria-expanded="false" aria-controls="collapseTwelveth">
+          What is Circledin's refund policy?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseTwelveth" class="collapse" aria-labelledby="headingTwelveth" data-parent="#accordionExample">
+      <div class="card-body">
+        If you not satisfy with your services, we will refund back service charges.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThirteen">
+      <h2 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThirteen" aria-expanded="false" aria-controls="collapseThirteen">
+          How does Circledin's make money?
+        </button>
+      </h2>
+    </div>
+    <div id="collapseThirteen" class="collapse" aria-labelledby="headingThirteen" data-parent="#accordionExample">
+      <div class="card-body">
+        We don't. We only charge a service fee to keep the lights on.
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+{% endblock %}

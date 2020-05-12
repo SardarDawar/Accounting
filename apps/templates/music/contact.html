@@ -1,0 +1,103 @@
+{% extends 'Base.html' %}
+{% load static %}
+{% block title %} Contact {% endblock %}
+
+{% block content %}
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Thank You</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          We will contact you back as soon as possible.
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ##### Contact Area Start ##### -->
+    <section class="contact-area mt-100">
+        <div class="container">
+            <div class="row">
+                <!-- Contact Info -->
+                <div class="col-12 col-lg-6">
+                    <div class="contact--info mt-50 mb-100 text-dark">
+                        <h4>Contact Info</h4>
+                        <ul class="contact-list text-dark">
+                            <li class="text-dark">
+                                <h6 class="text-dark"><i class="fa fa-clock-o" aria-hidden="true"></i> Business Hours</h6>
+                                <h6 class="text-dark">8:00 AM - 4:00 PM</h6>
+                            </li>
+                            <li class="text-dark" >
+                                <h6 class="text-dark"><i class="fa fa-phone" aria-hidden="true"></i> Number</h6>
+                                <h6 class="text-dark">555-123-1234</h6>
+                            </li>
+                            <li class="text-dark">
+                                <h6 class="text-dark"><i class="fa fa-envelope" aria-hidden="true"></i> Email</h6>
+                                <h6 class="text-dark">support@circledin.io</h6>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="col-12 col-lg-6">
+                    <div class="contact-form">
+                        <h4>Get In Touch</h4>
+                        
+                        <form action="{% url 'contact' %}" method="post">
+                            {% csrf_token %}
+
+                            
+                            <div class="row">
+                                <div class="col-12 col-lg-6">
+                                    <div class="form-group">
+                                        
+                                        <input type="text" name="userName" placeholder="First Name" required id="id_userName" class="form-control text-dark" {% if request.user.is_authenticated %} value="{{ request.user.first_name }}" {% endif %} >
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="form-group">
+                                        <input type="text" name="email" placeholder="Email" required id="id_email" class="form-control text-dark" {% if request.user.is_authenticated %} value="{{ request.user.email }}" {% endif %}>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <textarea name="body" class="form-control text-dark" cols="30" rows="10" placeholder="Message" required id="id_body"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100" type="submit">Send</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ##### Contact Area End ##### -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    {% if send_successfull_contact %}
+    <script>
+        $(document).ready(function()
+        {
+            $('#exampleModal').modal('show')
+        })
+        
+    </script>
+    {% endif %}
+
+{% endblock %}

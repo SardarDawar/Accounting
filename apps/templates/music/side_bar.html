@@ -1,0 +1,11 @@
+<nav class="nav flex-column fixed-top card nav-pills pt-2" style="width: 150px; height:550px; margin-top: 5rem !important;">
+    <a class="nav-link {% if section_profile %}active{% endif %}" href="{% url 'profile' %}">Profile</a>
+    
+    <a class="nav-link {% if edit_profile %}active{% endif %}" href="{% url 'edit_profile' %}">Edit Profile</a>
+    
+    <a class="nav-link {% if list_plans_section %}active{% endif %} " href="{% url 'plan' %}">Our Plans</a>
+    <a class="nav-link {% if our_plans_section %}active{% endif %}" href="{% url 'Plans' %}" >My Plans</a>
+    <a class="nav-link {% if dashboard_section %}active{% endif %}" href="{% url 'dashboard' %}" >Joined Plans</a>
+    <a class="nav-link {% if section_add_a_new_plan %}active{% endif %} " href="{% url 'planform' %}">Add New Plan</a>
+    <a class="nav-link {% if change_password_section %}active{% endif %}" href="{% url 'change_password' %}">Change Password</a>
+  </nav>

@@ -1,0 +1,155 @@
+{% load humanize FindSubUser findNextMonth findNextYear findFindSubID findSubStatus findSubCancelStatus %}
+
+        {% if request.user|FindSubUser:plan.id %}
+        {% if request.user|findSubStatus:plan.id == "Active" %}
+        <div class="col">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-body overflow-auto" style="height: 300px !important;">
+                        {% if plan.get_subscription_objects %}
+                          {% for sub in plan.get_subscription_objects %}
+                            <div class="row no-gutters bg-light position-relative p-2 mb-2">
+                              <div class="media-body">
+                                <h5 class="mt-0" style="font-size: 14px;">Subscribed By: {{ sub.user.username }}
+                                  <p class="text-muted font-weight-normal" style="font-size: 12px;">Subscribed Date: {{ sub.created_at }} </p>
+          
+                                </h5>
+                                
+                              </div>
+                                
+                            </div>
+                          {% endfor %}    
+                        {% else %}
+                          <div class="row no-gutters bg-light position-relative mb-2 p-2">  
+                            <h5 class="mt-0" style="font-size: 14px;">No one has subscribed to this plan yet.</h5>
+                          </div>
+                        {% endif %}
+                        
+                      </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card-body overflow-auto pt-0" style="height: 300px !important;">
+                        {% if request.user|findSubCancelStatus:plan.id == "Active" %}
+                        <div class="sticky-top">
+                          <form action="{% url 'comment_plan' plan.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="row no-gutters bg-light position-relative p-2 mb-2 pb-0">
+                              <div class="form-group col-lg-12 mb-0">
+                                <input type="text" class="form-control" name="message" id="exampleInputEmail1" aria-describedby="emailHelp" cols="100" placeholder="Comment Body" rows="3">
+                              </div>
+                            </div>
+        
+                          </form>
+                        </div>
+                        {% endif %}
+                        
+                        {% if plan.get_comments %}
+                          {% for comment in plan.get_comments %}
+                            <div class="row no-gutters bg-light  position-relative p-2 mb-2">
+                              <div class="media-body">
+                                <h5 class="mt-0" style="font-size: 14px;">Comment By: {{ comment.user.username }}
+                                  <p class="text-muted font-weight-normal" style="font-size: 12px;">
+                                    {{ comment.timestamp|timesince }} ago 
+                                  </p>
+                                </h5>
+                                <h5 class="mt-0">
+                                  <p class="card-text" style="font-size: 14px;">
+                                    {{ comment.message }}
+                                  </p>
+                                </h5>
+                              </div>
+                               
+                                
+                                
+                            </div>
+                          {% endfor %}    
+                        {% else %}
+                          <div class="row no-gutters bg-light position-relative mb-2 p-2">  
+                            <h5 class="mt-0" style="font-size: 14px;">No one has commented to this plan yet.</h5>
+                          </div>
+                        {% endif %}
+                        
+                      </div>
+                </div>
+            </div>
+        </div>
+       
+        {% endif %}
+        {% endif %}
+
+        {% if plan.user == request.user %}
+
+        <div class="col">
+                <div class="row">
+                        <div class="col-md-6">
+                            <div class="card-body overflow-auto" style="height: 300px !important;">
+                                {% if plan.get_subscription_objects %}
+                                  {% for sub in plan.get_subscription_objects %}
+                                    <div class="row no-gutters bg-light position-relative p-2 mb-2">
+                                      <div class="media-body">
+                                        <h5 class="mt-0" style="font-size: 14px;">Subscribed By: {{ sub.user.username }}
+                                          <p class="text-muted font-weight-normal" style="font-size: 12px;">Subscribed Date: {{ sub.created_at }} </p>
+                  
+                                        </h5>
+                                        
+                                      </div>
+                                        
+                                    </div>
+                                  {% endfor %}    
+                                {% else %}
+                                  <div class="row no-gutters bg-light position-relative mb-2 p-2">  
+                                    <h5 class="mt-0" style="font-size: 14px;">No one has subscribed to this plan yet.</h5>
+                                  </div>
+                                {% endif %}
+                                
+                              </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card-body overflow-auto pt-0" style="height: 300px !important;">
+                                {% if request.user == plan.user and plan.status == "Active" %}
+                                <div class="sticky-top">
+                                  <form action="{% url 'comment_plan' plan.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="row no-gutters bg-light position-relative p-2 mb-2 pb-0">
+                                      <div class="form-group col-lg-12 mb-0">
+                                        <input type="text" class="form-control" name="message" id="exampleInputEmail1" aria-describedby="emailHelp" cols="100" placeholder="Comment Body" rows="3">
+                                      </div>
+                                    </div>
+                
+                                  </form>
+                                </div>
+                                {% endif %}
+                                
+                                {% if plan.get_comments %}
+                                  {% for comment in plan.get_comments %}
+                                    <div class="row no-gutters bg-light  position-relative p-2 mb-2">
+                                      <div class="media-body">
+                                        <h5 class="mt-0" style="font-size: 14px;">Comment By: {{ comment.user.username }}
+                                          <p class="text-muted font-weight-normal" style="font-size: 12px;">
+                                            {{ comment.timestamp|timesince }} ago
+                                          </p>
+                                        </h5>
+                                        <h5 class="mt-0">
+                                          <p class="card-text" style="font-size: 14px;">
+                                            {{ comment.message }}
+                                          </p>
+                                        </h5>
+                                      </div>
+                                       
+                                        
+                                        
+                                    </div>
+                                  {% endfor %}    
+                                {% else %}
+                                  <div class="row no-gutters bg-light position-relative mb-2 p-2">  
+                                    <h5 class="mt-0">No one has commented to this plan yet.</h5>
+                                  </div>
+                                {% endif %}
+                                
+                              </div>
+                        </div>
+                </div>
+
+        </div>
+        {% endif %}
