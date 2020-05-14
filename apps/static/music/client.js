@@ -27,7 +27,6 @@ form.addEventListener('submit', function(event) {
   // We don't want to let default form submission happen here,
   // which would refresh the page.
   event.preventDefault();
-
   stripe.createPaymentMethod({
     type: 'card',
     card: cardElement,
@@ -38,6 +37,7 @@ form.addEventListener('submit', function(event) {
 });
 
 function stripePaymentMethodHandler(result, email) {
+  
   if (result.error) {
     alert(result)
   } else {
@@ -53,6 +53,7 @@ function stripePaymentMethodHandler(result, email) {
       }),
    
     }).then(function(result) {
+      
       return result.json();
     }).then(function(customer) {
       

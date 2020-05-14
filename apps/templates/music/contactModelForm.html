@@ -32,7 +32,6 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalContactLabel">Modal title</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -42,7 +41,7 @@
             <div class="contact-form">
                 <h4>Get In Touch</h4>
                 
-                <form action="{% url 'contact' %}?next={% url 'Join' plan.category.id plan.id %}" method="post">
+                <form action="{% url 'contact' %}?next={% if sub %}{% url 'EditSubscription' sub.plan.id sub.id %}{% else %}{% if subs %}{% url 'Details' subs.plan.id subs.id %}{% else %}{% url 'Join' plan.category.id plan.id %}{% endif %}{% endif %}" method="post">
                     {% csrf_token %}
 
                     

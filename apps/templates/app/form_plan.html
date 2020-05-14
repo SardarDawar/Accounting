@@ -1,5 +1,45 @@
 {% extends 'Base.html' %}
+{% load static %}
 {% block content %}
+
+
+
+<script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
+<script>
+    function updateLine(){
+      var v = $("#id_currently_monthly_payment_per_line").val().trim();
+      if (v.length == 0)
+      {
+        $("#currentLinePayment").hide();
+      }
+      else{
+        $("#currentLinePayment").show();
+      }
+      var c =  $("#id_category :selected").text();
+      var j  = 0
+      if (c == "VERIZON")
+      {
+        j = ( v-30 )*12;
+      }
+      else if(c == "T-MOBILES")
+      {
+        j = ( v-28 )*12;
+      }
+      else if(c == "AT-T")
+      {
+        j = ( v-35 )*12;
+      }
+      
+      var r  ="Great! We can save you about $" +  j + " per line a year."
+      $("#currentLinePayment").html(r);
+    }
+  </script>
+  
+
+
+
+
+
 
 <div class="row mr-0">
     <div class="col">
@@ -66,7 +106,7 @@
                                     
                             </div>
                             <div class="form-group">
-                                <label>Monthly Payment Date</label>
+                                <label>Next Recurring Bill Date</label>
                                 <div class="input-group date" data-provide="datepicker" data-date-format="dd">
                                 <input type="text" name="monthly_payment_date" maxlength="150" class="form-control" {% if form.monthly_payment_date.value %}value="{{ form.monthly_payment_date.value }}"{% endif %}
                                     required="">
@@ -75,21 +115,21 @@
                                     </div>
                                     </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-
                             <div class="form-group">
-                                <label>Current Monthly Payment Per line</label>
+                                <label>How much are you currently paying per line?</label>
                                 <input type="number" name="currently_monthly_payment_per_line" maxlength="150" {% if form.currently_monthly_payment_per_line.value %}value="{{ form.currently_monthly_payment_per_line.value }}"{% endif %}
                                     class="form-control" required="">
                             </div>
+                            <div class="form-group">
+                                <label>Current Family Size</label>
+                                <input type="number" name="currentFamilySize" maxlength="3"
+                                  {% if form.currentFamilySize.value %}
+                                  value="{{ form.currentFamilySize.value}}" {% endif %} class="form-control"
+                                  required="">
+                              </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="form-group">
-                                <label>Plan Link</label>
-                                <input type="text" name="linkWeb"  {% if form.linkWeb.value %}value="{{ form.linkWeb.value }}"{% endif %}
-                                    maxlength="150" class="form-control">
-                            </div>
+                            
                             <div class="form-group">
                                 <label for="exampleFormControlTextarea1">Additional Notes (Number of characters : <span id="CharactersCounter"></span>/500)</label>
                                 <textarea maxlength="500" class="form-control" id="exampleFormControlTextarea1" rows="3" onkeyup="countChar(this)"

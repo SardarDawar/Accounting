@@ -98,12 +98,11 @@
                             <div class="col-md-5">
     
                                 <div class="form-group">
-                                    <label>Total Number of Slots</label>
-                                    <input type="number" name="total_slots" value="{{object.total_slots}}"
-                                        maxlength="150" class="form-control">
+                                    <label>Total Available Slots</label>
+                                    {{ form.total_slots }}
                                 </div>
                                 <div class="form-group">
-                                    <label>Monthly Payment Date</label>
+                                    <label>Next Recurring Bill Date</label>
                                     
                                         <div class="input-group date" data-provide="datepicker" data-date-format="dd">
                                             <input type="text" name="monthly_payment_date"  value="{{object.monthly_payment_date}}"
@@ -114,22 +113,23 @@
                                             </div>
                                         </div>
                                 </div>
-                            </div>
-                            <div class="col-md-12">
-    
+                                
                                 <div class="form-group">
-                                    <label>Current Monthly Payment Per line</label>
+                                    <label>How much are you currently paying per line?</label>
                                     <input type="number" name="currently_monthly_payment_per_line"
                                         value="{{object.currently_monthly_payment_per_line}}" maxlength="150"
                                         class="form-control">
                                 </div>
+                                <div class="form-group">
+                                    <label>Current Family Size</label>
+                                    <input type="number" name="currentFamilySize" maxlength="3"
+                                      {% if object.currentFamilySize %}
+                                      value="{{ object.currentFamilySize}}" {% endif %} class="form-control"
+                                      required="">
+                                  </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Plan Link</label>
-                                    <input type="text" name="linkWeb" {% if  object.linkWeb %}value="{{object.linkWeb}}"{% endif %}
-                                        maxlength="150" class="form-control">
-                                </div>
+                                
                                 <div class="form-group">
                                     <label for="exampleFormControlTextarea1">Additional Notes</label>
                                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"

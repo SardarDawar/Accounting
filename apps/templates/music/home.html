@@ -184,6 +184,36 @@
 
 
 
+<script>
+  function updateLine(){
+    var v = $("#id_currently_monthly_payment_per_line").val().trim();
+    if (v.length == 0)
+    {
+      $("#currentLinePayment").hide();
+    }
+    else{
+      $("#currentLinePayment").show();
+    }
+    var c =  $("#id_category :selected").text();
+    var j  = 0
+    if (c == "VERIZON")
+    {
+      j = ( v-30 )*12;
+    }
+    else if(c == "T-MOBILES")
+    {
+      j = ( v-28 )*12;
+    }
+    else if(c == "AT-T")
+    {
+      j = ( v-35 )*12;
+    }
+    
+    var r  ="Great! We can save you about $" +  j + " per line a year."
+    $("#currentLinePayment").html(r);
+  }
+</script>
+
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
@@ -221,7 +251,8 @@
                 <div class="form-group">
                   <label>Category</label>
                   
-                  <select name="category" required="" id="id_category" class="form-control" >
+                  <select name="category" required="" id="id_category" class="form-control" 
+                  onchange="updateLine();">
                     {% if categories %}
                       {% for category in categories %}
                         <option value="{{ category.id}}">{{ category.slug|upper   }}</option>
@@ -263,13 +294,6 @@
 
 
                 </div>
-                
-                
-                
-                
-                
-
-               
                 <div class="form-group">
                   <label>Family Name</label>
                   <input type="text" name="family_name" maxlength="150" class="form-control" required=""
@@ -293,24 +317,26 @@
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="col-md-12">
-
                 <div class="form-group">
                   <label>How much are you currently paying per line?</label>
-                  <input type="number" name="currently_monthly_payment_per_line" maxlength="150"
+                  <input type="number" name="currently_monthly_payment_per_line" maxlength="150" id="id_currently_monthly_payment_per_line"
                     {% if form.currently_monthly_payment_per_line.value %}
                     value="{{ form.currently_monthly_payment_per_line.value}}" {% endif %} class="form-control"
+                    required="" onkeyup="updateLine()">
+                </div>
+                <div class="form-group">
+                  <label class="text-danger card-text" id="currentLinePayment" style="display: none;"></label>
+                </div>
+                <div class="form-group">
+                  <label>Current Family Size</label>
+                  <input type="number" name="currentFamilySize" maxlength="3"
+                    {% if form.currentFamilySize.value %}
+                    value="{{ form.currentFamilySize.value}}" {% endif %} class="form-control"
                     required="">
                 </div>
               </div>
               <div class="col-md-12">
-                <div class="form-group">
-                  <label>Plan Link</label>
-                  <input type="text" name="linkWeb" {% if form.linkWeb.value %} value="{{ form.linkWeb.value}}"
-                    {% endif %} "
-                                maxlength=" 150" class="form-control">
-                </div>
+                
                 <div class="form-group">
                   <label for="exampleFormControlTextarea1">Additional Notes</label>
                   <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"

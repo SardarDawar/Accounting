@@ -108,7 +108,7 @@ class contactForm(forms.Form):
 class planForm(forms.ModelForm):
     class Meta:
         model = plan
-        exclude = ['user', 'number_of_open_slots', 'status']
+        exclude = ['user', 'number_of_open_slots', 'status', 'linkWeb']
         widgets = {
             'total_slots': forms.Select(choices = [(int(i), int(i)) for i in range(1, 13)])
         }

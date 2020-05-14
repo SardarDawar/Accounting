@@ -51,7 +51,7 @@ class category(models.Model):
         return self.plan_set.all().filter(status="Active").order_by('number_of_open_slots')
 
 
-
+from django.core.exceptions import *
 
 class plan(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
@@ -66,6 +66,11 @@ class plan(models.Model):
         verbose_name="Total Available Slots", blank=False, null=False, default=0, choices=FIXED_SLOT_CHOICES)
     linkWeb = models.URLField(
         max_length=200, blank=True, default='', null=True)
+    currentFamilySize = models.IntegerField(verbose_name="Current Family Size",
+                                            blank=True,
+                                            null=True,
+                                            default=0
+                                            )
     notes = models.TextField(max_length=500, blank=True, default='', null=True)
     created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=15, verbose_name="Plan Status",

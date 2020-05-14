@@ -57,11 +57,20 @@
                                     
 
                                     <td class="col-sm-3">
+                                      {% if k.status == "Active" %}
+                                      <button  type="button" class="btn btn-success" >Approved</button>
+                                      {% else %}
                                       <a href="{% url 'Approve' k.user.id j.id k.id %}" type="button" class="btn btn-danger" >Approve</a>
+                                      {% endif %}
+                                      
                                     </td>
 
                                     <td class="col-sm-3">
-                                      <a href="{% url 'Disapprove' k.user.id j.id k.id %}"  type="button" class="btn btn-danger">Disapprove</a>
+                                      {% if k.status == "Inactive" %}
+                                      <button  type="button" class="btn btn-success" >Disapprove</button>
+                                      {% else %}
+                                    <a href="{% url 'Disapprove' k.user.id j.id k.id %}"  type="button" class="btn btn-danger">Disapprove</a>
+                                      {% endif %}
                                     </td>
 
                                     <td class="col-sm-3">

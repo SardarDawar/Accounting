@@ -1,8 +1,7 @@
-{% extends 'Base.html' %}
+
 {% load static %}
-{% block content %}
-<br><br><br>
-  <form id="subscription-form" method="POST">
+
+  <form id="subscription-form" method="POST"  action="/charge">
     {% csrf_token %}
     <div id="card-element" >
     </div>
@@ -14,4 +13,4 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'music/client.js' %}"></script>
 
-{% endblock %}
+

@@ -721,7 +721,7 @@ def EditSubscription(request,plan_id,sub_id):
 def Detail(request, plan_id, sub_id):
     try:
         p = plan.objects.get(id = plan_id)
-        s = subscription.objects.get(plan = p)
+        s = subscription.objects.get(plan = p, id=sub_id)
         if s.user == User.objects.get(username = request.user.username) or p.user == User.objects.get(username = request.user.username) :
             template_name= "app/detail.html"
             context= {
@@ -893,5 +893,6 @@ def charge(request):
         
         # creating user object to be saved in database
         Api_key.objects.create(user=request.user,paymentMenthod=paymentMethod,customer_Id=customer.id,subscription_ID=subscription.id)
-        return redirect('home')
+        # print(customer)
+        return redirect(reverse('home'))
     return render(request, 'app/payment.html')
