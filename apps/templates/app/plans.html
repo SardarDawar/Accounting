@@ -11,12 +11,10 @@
   </div>
   <div class="col">
 
+    
     <div class="mx-auto bg-transparent" style="width: 1100px;">
 
-  
-
-      <div class="product bg-transparent mt-5 mb-5">
-        {% if messages %}
+      {% if messages %}
         {% for message in messages %}
             <div class="alert alert-success mt-5" role="alert" style="max-width:500px !important;">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -28,6 +26,10 @@
             </div>
         {% endfor %}
     {% endif %}
+      {% include "app/list_plan.html" with plans=obj %}
+
+      <div class="product bg-transparent mt-5 mb-5">
+        
           <div class="row ml-2 bg-transparent">
             
         {%  if  C %}

@@ -1,18 +1,7 @@
 {% extends "Base.html" %}
 {% load static %}
 {% block title %}Registration{% endblock %}
-
-
-
 {% block content %}
-
-
-
-
-
-
-
-
 
 <style>
     input::-webkit-inner-spin-button,
@@ -27,74 +16,8 @@
 
 
 <script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'music/js/password_strength_check.js' %}"></script>
 
-<script>
-
-    
-    function hasLowerCase(str) {
-      return str.toUpperCase() != str;
-    }
-
-    function hasUpperCase(str) {
-      return str.toLowerCase() != str;
-    }
-
-    function testPasswRegexp3(passw){
-        const extraStrong = /(?=.*[\!@#$%^&*()\\[\]{}\-_+=~`|:;"'<>,./?])/g;
-return extraStrong.test(passw);
-
-};
-
-function testPasswRegexpNumeric(passw)
-{
-    const extraStrong = /(?=.*[\d])/g;
-return extraStrong.test(passw);
-    
-};
-   
-        function checkConditoin(){
-            var i = $("#id_password").val();
-            if(hasLowerCase(i)){
-                $("#customCheck1").prop( "checked", true );
-            }   
-            else{
-                $("#customCheck1").prop( "checked", false );
-            }
-            if(hasUpperCase(i)){
-                $("#customCheck2").prop( "checked", true );
-            }   
-            else{
-                $("#customCheck2").prop( "checked", false );
-            }
-
-            if (i.length > 9 )
-            {
-                $("#customCheck5").prop( "checked", true );
-            }
-            else{
-                $("#customCheck5").prop( "checked", false );
-            }
-
-            if (testPasswRegexp3(i))
-            {
-                
-                $("#customCheck4").prop( "checked", true );
-            }
-            else{
-                $("#customCheck4").prop( "checked", false );
-            }
-
-            if(testPasswRegexpNumeric(i))
-            {
-                $("#customCheck3").prop( "checked", true );
-            }
-            else{
-                $("#customCheck3").prop( "checked", false );
-            }
-            
-        }
-    </script>
-    
 
 
 
@@ -135,30 +58,40 @@ return extraStrong.test(passw);
 
 
         <div class="card-body">
-            <form action="{% url 'register' %}" method="POST" name="registrationForm" class="password-strength form">
+            <form action="{% url 'register' %}" method="POST" name="registrationForm" class="password-strength form needs-validation" novalidate>
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="id_username">Username</label>
                     <input type="text" name="username" maxlength="150" required id="id_username" class="form-control"
                         placeholder="Enter User"
                         value="{% if form.username.value %}{{ form.username.value }}{% endif %}">
+                        <div class="invalid-feedback">
+                            Please provide a valid username.
+                          </div>
                     <small id="usernameHelpInline" class="text-muted">
                         Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
                     </small>
+                   
                 </div>
 
                 <div class="form-group">
                     <label for="id_first_name">First name</label>
                     <input type="text" name="first_name" maxlength="30" id="id_first_name" class="form-control"
-                        placeholder="Enter First Name"
+                        placeholder="Enter First Name" required
                         value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}">
+                        <div class="invalid-feedback">
+                            Please provide a valid first name.
+                          </div>
                 </div>
 
                 <div class="form-group">
                     <label for="id_last_name">Last name</label>
                     <input type="text" name="last_name" maxlength="150" id="id_last_name" class="form-control"
-                        placeholder="Enter Last Name"
+                        placeholder="Enter Last Name" required
                         value="{% if form.last_name.value %}{{ form.last_name.value }}{% endif %}">
+                        <div class="invalid-feedback">
+                            Please provide a valid last name.
+                          </div>
                 </div>
 
 
@@ -168,43 +101,62 @@ return extraStrong.test(passw);
 
                 <div class="form-group">
                     <label for="id_password">Password</label>
-                    <input class="password-strength__input form-control" type="password" id="id_password"
-                        aria-describedby="passwordHelp" placeholder="Enter password"  data-toggle="password" onkeyup="checkConditoin();"/>
-                        <div class="password-strength__bar-block progress mb-4">
-                            <div class="password-strength__bar progress-bar bg-danger" role="progressbar" aria-valuenow="0"
-                                aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
+                    <input class="password-strength__input form-control" type="password" name="password" required
+                        id="id_password" aria-describedby="passwordHelp" placeholder="Enter password"
+                        data-toggle="password" onkeyup="checkConditoin();" />
+                        <div class="invalid-feedback">
+                            Please provide a valid password.
+                          </div>
+                    <div class="password-strength__bar-block progress mb-4">
+                        <div class="password-strength__bar progress-bar bg-danger" role="progressbar" aria-valuenow="0"
+                            aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  
                     <small class="password-strength__error text-danger js-hidden"></small><small
                         class="form-text text-muted mt-2" id="passwordHelp">
                         <ul class="pl-3 text-dark">
-                            <li><div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="customCheck1" disabled >
-                                <label class="custom-control-label" for="customCheck1" >Atleast 1 Lowercase Letter</label>
-                              </div></li>
-                              <li><div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="customCheck2" disabled >
-                                <label class="custom-control-label" for="customCheck2" >Atleast 1 Uppercase Letters</label>
-                              </div></li>
+                            <li>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck1" disabled>
+                                    <label class="custom-control-label" for="customCheck1">Atleast 1 Lowercase
+                                        Letter</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck2" disabled>
+                                    <label class="custom-control-label" for="customCheck2">Atleast 1 Uppercase
+                                        Letters</label>
+                                </div>
+                            </li>
 
-                              <li><div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="customCheck4" disabled >
-                                <label class="custom-control-label" for="customCheck4" >Atleast 1 Special Character</label>
-                              </div></li>
-                            
-                            
-                            
-                            <li><div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="customCheck3" disabled >
-                                <label class="custom-control-label" for="customCheck3" >Numeric Numbers</label>
-                              </div></li>
-                            <li><div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="customCheck5" disabled >
-                                <label class="custom-control-label" for="customCheck5" >Atleast Add 9 charachters or more</label>
-                              </div></li>
+                            <li>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck4" disabled>
+                                    <label class="custom-control-label" for="customCheck4">Atleast 1 Special
+                                        Character</label>
+                                </div>
+                            </li>
+
+
+
+                            <li>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck3" disabled>
+                                    <label class="custom-control-label" for="customCheck3">Numeric Numbers</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck5" disabled>
+                                    <label class="custom-control-label" for="customCheck5">Atleast Add 9 charachters or
+                                        more</label>
+                                </div>
+                            </li>
                         </ul>
                     </small>
                 </div>
-               
+
 
 
 
@@ -216,16 +168,23 @@ return extraStrong.test(passw);
                     <input type="password" name="password2" required id="id_password2" class="form-control"
                         placeholder="Enter Confirm Password"
                         value="{% if form.password2.value %}{{ form.password2.value }}{% endif %}"
-                        data-toggle="password">
-                    <small id="passwordHelpInline" class="text-muted">
-                        Both Passwords should be same.
-                    </small>
+                        data-toggle="password"
+                        onchange="Validate();">
+                        
+                        <div class="invalid-feedback font-weight-bold" id="matchPassword">
+                            
+                          </div>
+                    
                 </div>
 
                 <div class="form-group">
                     <label for="id_email">Email Address</label>
-                    <input type="text" name="email" required id="id_email" class="form-control"
+                    <input type="email" name="email" required id="id_email" class="form-control"
                         placeholder="Enter Email" value="{% if form.email.value %}{{ form.email.value }}{% endif %}">
+
+                        <div class="invalid-feedback">
+                            Please provide a vaild email address.
+                          </div>
 
                 </div>
 
@@ -234,14 +193,31 @@ return extraStrong.test(passw);
                     <input type="text" name="contactNumber" id="id_contactNumber" required="" class="form-control"
                         maxlength="12" placeholder="Enter Contact Number"
                         value="{% if form_2.contactNumber.value %}{{ form_2.contactNumber.value }}{% endif %}">
+                        <div class="invalid-feedback">
+                            Please provide a valid contact number.
+                          </div>
                     <small id="passwordHelpInline" class="text-muted">
                         Contact Number Format : 123-123-1234
                     </small>
                 </div>
-                <p class="text-center">
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox mb-3">
+                        <input type="checkbox" class="custom-control-input" id="customControlValidation1" required>
+                        <label class="custom-control-label" for="customControlValidation1">You agree to the <a class="card-link" href="{% url 'TermsConditions' %}" target="_blank">terms of use</a> and acknowledge the <a class="card-link" href="{% url 'PrivacyPolicy' %}" target="_blank">privacy policy</a></label>
+                        <div class="invalid-feedback"> You must agree terms of use and acknowledge the privacy policy before submitting.</div>
+                      </div>
+                  
+                  </div>
+
+
+
+
+                <p class="text-right">
+                    <button type="submit" class="btn btn-primary" value="Sign-Up">Get Register</button>
                     <a type="button" class="btn btn-primary" value="Sign-Up" href="{% url 'home' %}">Cancel</a>
                     <input type="hidden" name="next" value="{{ request.GET.next }}" />
-                    <button type="submit" class="btn btn-primary" value="Sign-Up">Get Register</button>
+
                 </p>
 
 
@@ -250,47 +226,26 @@ return extraStrong.test(passw);
         </div>
     </div>
 </div>
-<script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
 
 <script src="{% static 'music/js/bootstrap-password-toggler.js' %}" type="text/javascript"></script>
+<script src="{% static 'music/js/contactNumberFormat_script.js' %}"></script>
+<script src="{% static 'music/js/register_form_validation.js' %}"></script>
 
 
+<script type="text/javascript">
+    function Validate() {
 
-
-
-<script>
-    $(document).ready(function () {
-        var $form = $("#registrationForm");
-        var $input = $('#id_contactNumber');
-        $input.on("keyup", function (event) {
-
-
-            // 1
-            var $this = $(this);
-            var input = $this.val();
-
-            // 2
-            var input = input.replace(/[\D\s\._\-]+/g, "");
-
-
-            // 3
-            var split = 3;
-            var chunk = [];
-
-            for (var i = 0, len = input.length; i < len; i += split) {
-                split = (i >= 4 && i <= 10) ? 4 : 3;
-                chunk.push(input.substr(i, split));
-            }
-
-            // 4
-            $this.val(function () {
-                return chunk.join("-").toUpperCase();
-            });
-
-        });
-    });
+        var password = document.getElementById("id_password").value;
+        var confirmPassword = document.getElementById("id_password2").value;
+        if (password != confirmPassword) {
+            $("#matchPassword").css("display", "block");
+            $("#matchPassword").html("Both Passwords doesn't match.")
+        }
+        else{
+            $("#matchPassword").css("display", "block");
+            $("#matchPassword").html("Both Passwords matched.")
+        }
+        
+    }
 </script>
-
-
-
 {% endblock content %}

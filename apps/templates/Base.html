@@ -10,16 +10,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}Mobiles{% endblock %}</title>
     <link rel="shortcut icon" href="{% static 'music/core-img/alum.png' type='image/x-icon' %}">
-    
+
     <link rel="stylesheet" href="{% static 'music/css/style1.css' %}">
     <link rel="stylesheet" href="{% static 'music/css/base_2.css' %}">
-    
-    
+
+
     <link rel="stylesheet" href="{% static 'music/css/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'music/css/bootstrap-datepicker.css' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link href="{% static 'music/css/main_2.css' %}" rel="stylesheet" />
-    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"
+        integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe"
+        crossorigin="anonymous"></script>
 
 
 
@@ -126,19 +129,19 @@
         }
 
         .dropdown-toggle::after {
-    display: inline-block;
-    margin-left: .255em;
-    vertical-align: 0em;
-    content: "";
-    border-top: none !important ;
-    border-right: 0em solid transparent;
-    border-bottom: 0;
-    border-left: 0em solid transparent;
-}
- 
-.progress-bar{
-    background-color: none  !important;
-}
+            display: inline-block;
+            margin-left: .255em;
+            vertical-align: 0em;
+            content: "";
+            border-top: none !important;
+            border-right: 0em solid transparent;
+            border-bottom: 0;
+            border-left: 0em solid transparent;
+        }
+
+        .progress-bar {
+            background-color: none !important;
+        }
     </style>
 
 
@@ -147,7 +150,7 @@
 
 
 <body>
-   
+
     <!-- ##### Header Area Start ##### -->
     <header class="header-area">
 
@@ -180,19 +183,19 @@
                         <!-- Nav Start -->
                         <div class="classynav">
                             <ul>
-                                
-                                
-                                
+
+
+
                                 <li><a href="{% url 'home' %}">Home</a></li>
                                 {% if request.user.is_authenticated %}
 
-                                
-                                <li><a href="{% url 'profile'  %}">My Profile</a></li>
-                             
-                                
+
+                                <li><a href="{% url 'edit_profile'  %}">My Profile</a></li>
+
+
                                 {% endif %}
-                                
-                                
+
+
                                 <li><a href="{% url 'contact' %}">Contact Us</a></li>
                                 <li><a href="{% url 'About' %}">About Us</a></li>
                                 <li><a href="{% url 'FAQ' %}">FAQ</a></li>
@@ -213,12 +216,11 @@
 
                             <div class="register-login-area">
                                 {% if request.user.is_authenticated %}
-                                <a href="{% url 'profile' %}"
-                                    class="btn">
+                                <a href="{% url 'profile' %}" class="btn">
                                     {% if request.user.first_name %}
-                                        {{ request.user.first_name }}
+                                    {{ request.user.first_name }}
                                     {% else %}
-                                        {{ request.user.username }}
+                                    {{ request.user.username }}
                                     {% endif %}
                                 </a>
 
@@ -244,262 +246,30 @@
 
     {% endblock %}
 
-
-
-
-
-
-
     <script src="{% static 'music/client.js' %}"></script>
-
-
-
-    <!-- ##### All Javascript Script ##### -->
-    <!-- jQuery-2.2.4 js -->
     <script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
-    <!-- Popper js -->
     <script src="{% static 'music/js/popper.min.js' %}"></script>
-    <!-- Bootstrap js -->
     <script src="{% static 'music/js/bootstrap.min.js' %}"></script>
-    <!-- All Plugins js -->
     <script src="{% static  'music/js/plugins.js' %}"></script>
-    <!-- Active js -->
     <script src="{% static 'music/js/active.js' %}"></script>
-
     <script src="{% static 'music/js/bootstrap-datepicker.js' %}"></script>
-
     <script src="{% static 'music/js/bootstrap-datepicker.min.js' %}"></script>
-
-
-
-    <script  src="{% static 'music/js/script.js' %}"></script>
-
-
-
-
+    <script src="{% static 'music/js/script.js' %}"></script>
+    <script src="{% static 'music/js/General_script.js' %}"></script>
+    <script src="{% static 'music/js/number_of_slots_script.js' %}"></script>
+    <script src="{% static 'music/js/calculator.js' %}"></script>
+    <script src="{% static 'music/js/date_picker_Script.js' %}"></script>
+    <script src="{% static 'music/js/word_counter_script.js' %}"></script>
+    <script src="{% static 'music/js/progress_bar_script.js' %}"></script>
+    {% if error %}
     <script>
         $(document).ready(function () {
-            $(".form-control").css("border-radius", "0px !important");
-            $(".form-control").attr("autocomplete", "off");
-            $(".card").addClass("shadow");
-            $("select").addClass("form-control");
-            $(".mx-auto .card").addClass("mt-5");
-            $(".mx-auto .card").addClass("mb-5");
-            $("label").addClass("font-weight-bold");
-            
-        });
+            $('#exampleModal').modal('show');
 
+        });
     </script>
+    {% endif %}
 
-    
-<script>
-
-    $(document).ready(function()
-    {
-        // console.log($("number_of_slots").val());
-        $(document).on("change", "#exampleFormControlSelect1", function()
-        {
-            var elem_1 = $(this).children("option:selected").val();
-            var elem_2 = $("#payment").attr("data");
-            var elem_3 = $("#total").attr("data");
-            $("#total").html("$" +  (elem_1 * elem_2));
-        });
-
-            var elem_1 = $("#exampleFormControlSelect1").children("option:selected").val();
-            var elem_2 = $("#payment").attr("data");
-            var elem_3 = $("#total").attr("data");
-            $("#total").html("$" +  (elem_1 * elem_2));
-            if ($("#total").html() == "$NaN")
-            {
-                $("#total").html("$" + "0");
-            }
-
-    });
-
-
-
-
-</script>
-
-
-<script>
-
-    $(document).ready(function()
-    {
-
-
-
-
-        $('#savings_amount').html(" ");
-        
-        
-        $("[name='totalcostAmount']").keyup(function(e)
-        {
-            e.preventDefault();
-            var x = $('[name="options"]');
-            var y = $('[name="accounts"]');
-            var z = $('[name="totalcostAmount"]');
-            var w = $('#savings_amount');
-            var results = 0;
-            if($("#options1").is(':checked')){
-               
-                results = parseFloat( parseFloat(z.val()) - (parseInt(y.val())*30))*12;
-            }
-
-            if($("#options2").is(':checked')){
-                
-                results = parseFloat( parseFloat(z.val()) - (parseInt(y.val())*30))*12;
-            }
-           
-            if($("#options3").is(':checked')){
-                
-                results = parseFloat( parseFloat(z.val()) - (parseInt(y.val())*35))*12;
-            }
-           
-        
-           
-            if (results < 0)
-            {
-                results = "Looks like you already have a great deal! You might want to compare what you’re getting on your plan compared to one of ours";
-                w.css("font-size", "14px");
-                
-                w.html(results);
-            }
-            else{
-                if(isNaN(results))
-             {
-               results = 0 ;
-             }
-                var R = "$" + results + "/year";
-                w.html(R);
-            }
-            
-            
-        });
-    
-    
-    $(document).on("change", "#customRange1", function(){
-        
-        $('[for="foo"]').css("left", "0px");
-        var values =  $(this).val()*26.5  +  "px"; 
-        if($(this).val()*26.5 <= "133")
-        {
-            values =  $(this).val()*26.5 - "20" +  "px"; 
-        }
-        $('[for="foo"]').css("left", values);
-        $('[for="foo"]').html($(this).val())
-        
-
-        
-            var x = $('[name="options"]');
-            var y = $('[name="accounts"]');
-            var z = $('[name="totalcostAmount"]');
-            var w = $('#savings_amount');
-            var results = 0;
-            if($("#options1").is(':checked')){
-               
-                results = parseFloat( parseFloat(z.val()) - (parseInt(y.val())*30))*12;
-            }
-
-            if($("#options2").is(':checked')){
-                
-                results = parseFloat( parseFloat(z.val()) - (parseInt(y.val())*30))*12;
-            }
-           
-            if($("#options3").is(':checked')){
-                
-                results = parseFloat( parseFloat(z.val()) - (parseInt(y.val())*35))*12;
-            }
-           
-        
-           
-            if (results < 0)
-            {
-                results = "Looks like you already have a great deal! You might want to compare what you’re getting on your plan compared to one of ours";
-                w.css("font-size", "14px");
-               
-                w.html(results);
-            }
-            else{
-                if(isNaN(results))
-             {
-               results = 0 ;
-             }
-                var R = "$" + results + "/year";
-                w.html(R);
-            }
-            
-
-
-
-
-
-
-    });
-   
-    
-    });
-</script>
-
-
-
-
-{% if error %}
-<script>
-    $(document).ready(function()
-    {
-           $('#exampleModal').modal('show');
-        
-    });
-</script>
-{% endif %}
-
-
-<script>
-
-$(document).ready(function()
-{
-    $('.btn').removeClass('activated'); //eventually removeClass of some previous class
-});
-
-$('.btn').on('click', function(){ 
-  $('.btn').removeClass('activated'); //eventually removeClass of some previous class
-  //other stuff
-});
-</script>
-
-
-<script>
-    $(document).ready(function(){
-        $('.datepicker').datepicker({
-          
-        });
-        
-    });
-
-</script>
-
-
-<script>
-    function countChar(val) {
-      var len = val.value.length;
-      if (len >= 500) {
-        val.value = val.value.substring(0, 500);
-      } else {
-        $('#CharactersCounter').text(len+1);
-      }
-    };
-  </script>
-
-
-<script>
-    $(document).ready(function()
-    {
-        $(".progress-bar").css("background-color", "transparent");
-        $("ul.progress-bar").addClass("list-group-horizontal");
-        $("li.section::before").css("color", "white");
-    });
-</script>
 
 </body>
 

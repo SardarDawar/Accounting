@@ -587,7 +587,7 @@
             style="width:300px !important; height: 300px !important; border-radius: 50% !important;">
             <h6 class="card-title text-white" style="margin-top: 25%;">Plan Name: {{ j.plan_name }}</h6>
             <h6 class="card-title text-white">Family Name: {{ j.family_name }}</h6>
-            <h6 class="card-title text-white">Number of Available Slots: {{ j.number_of_open_slots }}</h6>
+            <h6 class="card-title text-white">Number of Available Slots: {{ j.total_slots }}</h6>
             <h6 class="card-title text-white">Monthly Payment Date:{{ request.user|findNextMonth }}
               {{ j.monthly_payment_date }}, {{ request.user|findNextYear }}</h6>
             <h6 class="card-title text-white">Monthly Cost: ${{ j.currently_monthly_payment_per_line|intcomma }}</h6>

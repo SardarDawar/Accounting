@@ -10,10 +10,11 @@ urlpatterns = [
     url(r'^logout/$', views.logout_user, name= "logout"),
 
     #----------------------------------------------------------------------------
-    url(r'^profile/$', views.profile_user, name= "profile"),
+    url(r'^profile/$', views.edit_profile, name= "profile"),
     #---------------------------------------------------------------------------
     url(r'^register/$', views.register_user, name= "register"),
-    url(r'^edit_profile/$', views.edit_profile, name = "edit_profile"),
+    
+    url(r'^profile/$', views.edit_profile, name = "edit_profile"),
     
     
     # ****************************************************************
@@ -43,7 +44,7 @@ urlpatterns = [
     # ****************************************************************
     # Plan List that user creates
     # ****************************************************************
-    url(r'^plan/$', views.planList, name="plan"),
+    url(r'^plan/$', views.Plans, name="plan"),
 
 
 
@@ -139,4 +140,14 @@ urlpatterns = [
     # ********************************************************************
     path('charge', views.charge, name="charge"),
 
+
+    # ****************************************************************
+    # Terms of use Page
+    # ****************************************************************
+    path("terms-of-use", views.TermsConditions, name="TermsConditions"),
+
+    # ****************************************************************
+    # Privacy Policy
+    # ****************************************************************
+    path("privacy-policy", views.PrivacyPolicy, name="PrivacyPolicy"),
 ]

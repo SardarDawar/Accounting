@@ -238,7 +238,8 @@ def edit_profile(request):
         if form.is_valid() and form_2.is_valid():
             form.save()
             form_2.save()
-            return HttpResponseRedirect(reverse('profile'))
+            messages.success(request, "Profile has been updated successfully.")
+            return HttpResponseRedirect(reverse('edit_profile'))
     # print(form_2.errors)
     return render(request, 'music/edit_profile.html',{'form' : form, 'profile':profile, 'form_2':form_2, 'edit_profile': True})
 
@@ -267,7 +268,11 @@ def contact(request):
         form = contactForm(request.POST)
         if form.is_valid():
             mail_subject = 'Contact -- By -- ' + form.cleaned_data.get('userName')
-            message = form.cleaned_data.get('body')
+            email = form.cleaned_data.get('email')
+            message = f"\nMessage\n"
+            body = form.cleaned_data.get('body')
+            message += f"{body}"
+            message += f"\nUser's email address: {email}"
             email = EmailMessage(mail_subject, message, to=["support@circledin.io"])
             email.send()
             context={
@@ -374,7 +379,7 @@ def planEditFormView(request,id):
                     email = EmailMessage(subject, content, to=[ "support@circledin.io"])
                     email.send()
                     messages.success(request, "Plan has been edited successfully.")
-                    return redirect('plan')
+                    return redirect('Plans')
             context = {
                 'form':form,
                 'object':obj,
@@ -589,6 +594,7 @@ def Delete_Subscription(request, plan_id, sub_id):
 @login_required
 def Plans(request):
     obj=plan.objects.filter(user=User.objects.get(username=request.user.username))
+    
     categories = category.objects.all()
     A = []
     C = {}
@@ -859,6 +865,30 @@ def planCommentView(request, plan_id):
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
 
+
+
+
+# ****************************************************************
+# Terms and Conditions
+# ****************************************************************
+def TermsConditions(request):
+    template_name='app/terms.html'
+    context = {
+    
+    }
+    return render(request, template_name, context)
+
+
+
+# ****************************************************************
+# Privacy Policy
+# ****************************************************************
+def PrivacyPolicy(request):
+    template_name='app/privacy.html'
+    context = {
+    
+    }
+    return render(request, template_name, context)
 
 ######################## Payment ###########################3
 import stripe

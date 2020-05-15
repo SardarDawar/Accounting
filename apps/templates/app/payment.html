@@ -1,7 +1,9 @@
 
 {% load static %}
 
-  <form id="subscription-form" method="POST"  action="/charge">
+
+
+  <form id="subscription-form" method="POST"  action="/charge" class="needs-validation" novalidate>
     {% csrf_token %}
     <div id="card-element" >
     </div>
@@ -10,7 +12,8 @@
     <button type="submit">Subscribe</button>
   </form>
 
+  
+
 <script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'music/client.js' %}"></script>
-
 
