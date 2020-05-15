@@ -138,8 +138,13 @@ urlpatterns = [
     path('plan-comment/<int:plan_id>/', views.planCommentView, name="comment_plan"),
     
     # ********************************************************************
+    
+    # ****************************************************************
+    # Payment Method Goes Here
+    # ****************************************************************
+    path('misc', views.misc, name="misc"),
+    path('update', views.chargeupdate, name="update"),
     path('charge', views.charge, name="charge"),
-
 
     # ****************************************************************
     # Terms of use Page
@@ -150,4 +155,9 @@ urlpatterns = [
     # Privacy Policy
     # ****************************************************************
     path("privacy-policy", views.PrivacyPolicy, name="PrivacyPolicy"),
+    
+    # ****************************************************************
+    # Cancel plan Request
+    # ****************************************************************
+    path("cancel-request/<int:cat_id>/<int:plan_id>", views.leaveFamily, name="leaveFamily" ),
 ]

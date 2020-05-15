@@ -22,7 +22,7 @@
             {% for  blogs in plans  %}
                 <div class="col-md-5 mb-2 ">
                     <div class="bg-light text-dark font-weight-bold text-center pt-0 list-group-item list-group-item-action" >
-                        <div class="progress-bar-wrapper mt-2" id="blogs_{{ blogs.id }}{{ blogs.plan_name }}"></div>
+                        
                         <div class="card-body text-left pl-2" id="parent_{{ blogs.id }}{{ blogs.plan_name }}">
                             
                             <h6 class="card-title text-dark">Plan Name: {{ blogs.plan_name }}</h6>
@@ -44,39 +44,6 @@
     </div>
 
 
-
-<script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
-{%  if plans %}
-    <script src="{% static 'music/js/progress-bar.js' %}"></script>
-    {% for i in plans %}
-        
-        <script>
-                ProgressBar.singleStepAnimation = 0;
-                ProgressBar.init(
-                    [ 'Join Plan',
-                    'Pending Admin Approval',
-                    'Approved',
-                    'Shipment Sent',
-                    'Activated'
-                    ],
-                    {% if i.status == "Inactive" %}
-                        'Join Plan',
-                    {% elif i.status == "Pending" %}
-                        'Pending Admin Approval',
-                    {% elif i.status == "Active" %}
-                        "Approved",
-                    {% elif i.status == "Ship" %}
-                        "Shipment Sent",
-                    {% elif i.status == "Approved" %}
-                        "Activated",
-                    {% endif %}
-                    'blogs_{{ i.id }}{{ i.plan_name }}'
-                );
-        </script>
-    {% endfor %}
-
-    
-{% endif %}
 
 
 

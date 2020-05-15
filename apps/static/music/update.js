@@ -22,18 +22,6 @@ var style = {
 var cardElement = elements.create('card', { style: style });
 cardElement.mount('#card-element');
 var form = document.getElementById('subscription-form');
-//------------------------------------------------------------------------------
-
-var first_name = document.getElementById('first_name');
-var last_name = document.getElementById('last_name');
-var Phone_number = document.getElementById('Phone_number');
-var City = document.getElementById('City');
-var State = document.getElementById('State');
-var Country = document.getElementById('Country');
-
-
-//-------------------------------------------------------------------------------
-
 
 form.addEventListener('submit', function(event) {
   // We don't want to let default form submission happen here,
@@ -45,19 +33,8 @@ form.addEventListener('submit', function(event) {
     card: cardElement,
     billing_details: {
       email: 'jenny.rosen@example.com',
-      name:(first_name.value).concat(last_name.value) 
-      ,
-      phone:Phone_number.value,
-      address: {
-        "city": City.value,
-        "country": Country.value,
-        "postal_code": null,
-        "state": State.value
-      },
      
     },
-
-
   }).then(stripePaymentMethodHandler);
 });
 
@@ -66,7 +43,7 @@ function stripePaymentMethodHandler(result, email) {
     alert(result)
   } else {
     // Otherwise send paymentMethod.id to your server
-    fetch('/charge', {
+    fetch('/update', {
       method: 'post',
       credentials: "same-origin",
       headers: {'Content-Type': 'application/json'},
@@ -77,16 +54,12 @@ function stripePaymentMethodHandler(result, email) {
       }),
    
     }).then(function(result) {
-     //window.open('http://127.0.0.1:8000/admin/')
-      window.location.replace('/profile')
       return result.json();
-
     }).then(function(customer) {
-      // 
+      
     });
   }
 }
-
 function getCookie(cname) {
   var name = cname + "=";
   var decodedCookie = decodeURIComponent(document.cookie);

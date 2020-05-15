@@ -9,9 +9,9 @@ from django.contrib.auth.hashers import make_password
 import datetime
 from datetime import date
 # ****************************************************************
-# Plan Choices
+# Subscription Choices
 # ****************************************************************
-PLAN_STATUS = (
+SUBSCRIPTION_STATUS = (
     ("Inactive", "Joined"),
     ('Pending', "Pending Admin Approval"),
     ("Active", "Approve"),
@@ -19,6 +19,17 @@ PLAN_STATUS = (
     ("Approved", "Activate"),
 
 )
+
+# ****************************************************************
+# Plan Status
+# ****************************************************************
+PLAN_STATUS = (
+    ("Inactive", "Joined"),
+    ('Pending', "Pending Admin Approval"),
+    ("Active", "Approve"),
+
+)
+
 
 FIXED_SLOT_CHOICES = [(int(i), str(i)) for i in range(1, 11)]
 
@@ -75,6 +86,8 @@ class plan(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=15, verbose_name="Plan Status",
                               default="Inactive", blank=False, null=False, choices=PLAN_STATUS)
+    
+    leaveRequest = models.BooleanField(verbose_name="Leave Request", default=False)
 
     def __str__(self):
         return self.plan_name
@@ -162,7 +175,8 @@ class subscription(models.Model):
     feedback = models.TextField(
         verbose_name="Feedback", max_length=500, default="", blank=True, null=True)
     status = models.CharField(max_length=15, verbose_name="Subscription Status",
-                              default="Inactive", blank=False, null=False, choices=PLAN_STATUS)
+                              default="Inactive", blank=False, null=False, choices=SUBSCRIPTION_STATUS)
+    leaveRequest = models.BooleanField(verbose_name="Leave Request", default=False)
 
     def __str__(self):
         return f"{self.user.username}'s Subscription"

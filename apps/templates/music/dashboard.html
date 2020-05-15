@@ -55,7 +55,7 @@
                       <div class="col-md-5">
                         
                           <div class="card bg-light text-dark font-weight-bold text-center pt-0" >
-                            <div class="progress-bar-wrapper mt-2"></div>
+                            <div class="progress-bar-wrapper mt-2" id="blogs_{{ i.plan.id }}{{ i.plan.plan_name }}"></div>
                             
                               <div class="card-body text-left pl-5" >
                                 
@@ -65,11 +65,11 @@
                               <h6 class="card-title text-dark">Monthly Payment Cost: ${{ i.TotalAmount|intcomma }}</h6>
                               <h6 class="card-title text-dark">Monthly Payment Date: {{ i.plan.monthly_payment_date|findNextMonth }} {{ i.plan.monthly_payment_date }}, {{ i.plan.monthly_payment_date|findNextYear }} </h6>
                                 
-                                    <button  class="btn btn-secondary ml-2 mr-0" data-toggle="modal" data-target="#exampleModalFeedback_{{ i.plan.id }}{{ i.id }}">Request to Cancel</button>
-                                    <a href="{% url 'EditSubscription' i.plan.id i.id %}" class="btn btn-secondary ml-2 mr-0">Edit</a>
+                                    <button  class="btn btn-danger ml-2 mr-0" data-toggle="modal" data-target="#exampleModalFeedback_{{ i.plan.id }}{{ i.id }}">Leave Family</button>
+                                    <a href="{% url 'EditSubscription' i.plan.id i.id %}" class="btn btn-success ml-2 mr-0">Edit</a>
                                 
                               
-                              <a href="{% url 'Join' i.plan.category.id i.plan.id %}" class="btn btn-secondary ml-2 mr-0">Details</a>
+                              <a href="{% url 'Join' i.plan.category.id i.plan.id %}" class="btn btn-primary ml-2 mr-0">Details</a>
                               </div>
                           </div>
                       </div>
@@ -90,5 +90,36 @@
 </div>
 
 
+
+<script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
+{%  if obj %}
+    <script src="{% static 'music/js/progress-bar.js' %}"></script>
+    {% for i in obj %}
+        
+        <script>
+                ProgressBar.singleStepAnimation = 0;
+                ProgressBar.init(
+                    [ 'Join Plan',
+                    'Pending Admin Approval',
+                    'Approved',
+                    'Shipment Sent',
+                    'Activated'
+                    ],
+                    {% if i.status == "Inactive" %}
+                        'Join Plan',
+                    {% elif i.status == "Pending" %}
+                        'Pending Admin Approval',
+                    {% elif i.status == "Active" %}
+                        "Approved",
+                    {% elif i.status == "Ship" %}
+                        "Shipment Sent",
+                    {% elif i.status == "Approved" %}
+                        "Activated",
+                    {% endif %}
+                    'blogs_{{ i.plan.id }}{{ i.plan.plan_name }}'
+                );
+        </script>
+    {% endfor %}
+{% endif %}
 
     {% endblock %}

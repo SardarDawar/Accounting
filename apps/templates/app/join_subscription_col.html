@@ -1,5 +1,28 @@
 {% load humanize FindSubUser findNextMonth findNextYear findFindSubID findSubStatus findSubSlots findSubCancelStatus static %}
 
+
+
+
+
+<script>
+  $(document).ready(function()
+  {
+    $(function () {
+  $('[data-toggle="popover"]').popover()
+});
+  });
+
+</script>
+
+
+<style>
+  .btn:focus,
+.btn:active{
+    box-shadow:none !important;
+    outline:0px !important;
+}
+  </style>
+
 <div class="card mt-5 mb-5" style="width: 38rem; margin-bottom: 0px !important;">
   <div class="card-body">
     <h5 class="card-title alert-warning p-3">Join : {{ plan.plan_name }}</h5>
@@ -68,13 +91,18 @@
           may incure with the carrier.</small>
       </div>
       <div class="form-group">
-        <label for="exampleForm">Monthly Estimation</label>
+        <label for="exampleForm">Monthly Estimation
+          <button type="button" class="btn" data-toggle="popover" title="Monthly Estimation" data-content="Your monthly bill estimation. Excludes any additional taxes and fees that you may incur from your mobile carrier."><i class="fa fa-info-circle"></i> </button>
+        </label>
         <p class="card-title font-weight-bold">${{ plan.currently_monthly_payment_per_line|intcomma }}pp/month</p>
       </div>
 
       <div class="form-group">
-        <label for="exampleForm">Service Fees</label>
-        <p class="card-title font-weight-bold">This fees allow us to keep the lights on so that we can continue
+        <label for="exampleForm">Service Fees
+          <button type="button" class="btn" data-toggle="popover" title="Service Fees" data-content="This fee allows us to keep the lights on so that we can continue providing you a platform to maxmize savings."><i class="fa fa-info-circle"></i> </button>
+        </label>
+        <p class="card-title font-weight-bold" >
+          This fees allow us to keep the lights on so that we can continue
           providing you the savings.</p>
       </div>
       <div class="form-group">
@@ -119,7 +147,7 @@
       {% endif %}
       {% endif %}
     </form>
-
+    <script src="https://js.stripe.com/v3/"></script>
 
 
   </div>

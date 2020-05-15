@@ -1,0 +1,21 @@
+{% load convert %}
+<h3>History</h3>
+{%  for i in invoices%}
+{{i.number}}<br>
+{{i.amount_paid}}<br>
+{{i.created | convert}}<br>
+From:{{upcoming.period_start | convert}}<br>
+To:{{upcoming.period_end | convert}}<br>
+{% endfor %}
+<h3>upcoming</h3>
+
+{{upcoming.description}}<br>
+{{upcoming.amount_due}}<br>
+{{upcoming.created | convert }}<br>
+
+{% for i in upcoming.lines.data %}
+FROM:{{i.period.start | convert}}<br>
+TO: {{i.period.end | convert}}<br>
+{% endfor %}
+<br>
+

@@ -1,9 +1,26 @@
 {% extends 'Base.html' %}
 {% load static humanize %}
+{% load findNextMonth %}
+{% load social_share %}
+
+
+{% load findNextYear %}
+
 {% block content %}
 
 
+<style>
+  div.facebook-this a{
+    color: white;
+    font-weight: bold;
+  }
+</style>
 
+{% if obj %}
+  {% for plan in obj %}
+    {% include "app/delete_confirmation_for_plan.html" with plan=plan %}
+  {% endfor %}
+{% endif %}
 
 <div class="row mr-0">
   <div class="col">
@@ -26,7 +43,7 @@
             </div>
         {% endfor %}
     {% endif %}
-      {% include "app/list_plan.html" with plans=obj %}
+      
 
       <div class="product bg-transparent mt-5 mb-5">
         
@@ -46,9 +63,37 @@
                     {% for j in values %}
                     {% if j %}
                     <div class="list-group">
-                        <a href="#" class="list-group-item list-group-item-action active">
-                            Plan Name : {{ j.plan_name }}
-                          </a>
+                        <div class="list-group-item list-group-item-action bg-white">
+                          <span class="font-weight-bold">
+                            {{ j.plan_name }} Family
+                          </span>
+                          
+                           
+                            <button class="btn btn-danger text-white font-weight-bold float-right" type="button">
+                              {% if j.leaveRequest == True %}
+                                Need Admin Approval
+                              {% else %}
+                              <a href="#" class="text-white font-weight-bold"  data-toggle="modal" data-target="#exampleModalPlanDelete_{{ j.id }}_{{ j.plan_name }}">Leave Family</a>
+                              {% endif %}
+                            </button>
+                            
+
+                            <button class="btn btn-success text-white font-weight-bold mr-2 float-right" type="button">
+                              {% post_to_facebook j.get_absolute_url "Share" %}
+                            </button>
+
+                            
+                            <button class="btn btn-success text-white font-weight-bold mr-2 float-right" type="button">
+                              <a href="{% url 'Join' j.category.id j.id %}" class="text-white font-weight-bold">
+                                See Details
+                              </a>
+                            </button>
+                            <button class="btn btn-success text-white font-weight-bold float-right mr-2" type="button">
+                              <a href="{% url 'planeditform' j.id %}" class="text-white font-weight-bold">Edit</a>
+                            </button>
+
+                            
+                        </div>
                        
                             {% for k  in j.get_subscription_objects %}
                           <table class="table">
@@ -58,30 +103,38 @@
                                     <td class="col-sm-3"> <a href="{% url 'Details' j.id k.id %}" title="See Subscription Details"> {{ k.user.username }}</a></td>
                                     
 
-                                    <td class="col-sm-3">
-                                      {% if k.status == "Active" %}
-                                      <button  type="button" class="btn btn-success" >Approved</button>
-                                      {% else %}
-                                      <a href="{% url 'Approve' k.user.id j.id k.id %}" type="button" class="btn btn-danger" >Approve</a>
-                                      {% endif %}
+
+                                    {% if k.status == "Pending" %}
+                                      <td class="col-sm-3">
+                                        <a href="{% url 'Approve' k.user.id j.id k.id %}" type="button" class="btn btn-danger" >Approve</a>
+                                      </td>
+                                      <td class="col-sm-3">
+                                        <a href="{% url 'Disapprove' k.user.id j.id k.id %}"  type="button" class="btn btn-danger">Disapprove</a>
+                                      </td>
+                                      <td class="col-sm-3">
+                                        <a type="button" class="btn btn-danger" href="{% url 'Delete' j.id k.id %}">Delete Subscription</a>
+                                      </td>
                                       
-                                    </td>
+                                    {% endif %}
 
-                                    <td class="col-sm-3">
-                                      {% if k.status == "Inactive" %}
-                                      <button  type="button" class="btn btn-success" >Disapprove</button>
-                                      {% else %}
-                                    <a href="{% url 'Disapprove' k.user.id j.id k.id %}"  type="button" class="btn btn-danger">Disapprove</a>
+
+                                    {% if k.leaveRequest is False %}
+                                      {% if k.status == "Active" %}
+                                        <td class="col-sm-3">
+                                          <button  type="button" class="btn btn-success float-right mr-2" >Approved</button>
+                                        </td>
+                                      {% elif k.status == "Inactive" %}
+                                        <td class="col-sm-3">
+                                          <button  type="button" class="btn btn-success float-right mr-2" >Disapprove</button>
+                                        </td>
                                       {% endif %}
-                                    </td>
-
+                                    {% else %}
                                     <td class="col-sm-3">
-                                      <a type="button" class="btn btn-danger" href="{% url 'Delete' j.id k.id %}">Delete Subscription</a>
+                                      <a type="button" class="btn btn-danger float-right mr-2" href="{% url 'Delete' j.id k.id %}">Leaving, Need Approval</a>
                                     </td>
+                                    {% endif %}
+                                    
 
-                                   
-                                    
-                                    
                                 </tr>
                             </tbody>
                           </table>

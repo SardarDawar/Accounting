@@ -63,7 +63,7 @@
                   <div class="card p-3" style="width:29.5rem; margin-top: 10px !important;">
                     <p class="card-title"> Great! Please complete payment and your Account Owner will provision your
                       acccount. You'll receive your new sim and number.</p>
-                      {% include "app/payment.html" %}
+                      
                   </div>
                 </div>
                 <div class="tab-pane fade" id="profile-2" role="tabpanel" aria-labelledby="profile-tab-2">
@@ -100,7 +100,7 @@
                 <p class="card-text pl-2 mb-2">
                   Questions? Please contact us and we'lll guide you through the process.
                 </p>
-                {% include "app/payment.html" %}
+                
               </div>
               
                     
@@ -149,7 +149,7 @@
                     <p class="card-title"> Excellent! Once we receive your payment the account owner will be notified
                       and will reach out to you help you switch over. In the mean while please have your mobile account
                       number and pin ready for the transition</p>
-                      {% include "app/payment.html" %}
+                      
                   </div>
                 </div>
                 <div class="tab-pane fade" id="profile-3" role="tabpanel" aria-labelledby="profile-tab-3">
@@ -170,6 +170,10 @@
             </div>
           </div>
         </div>
+        <div class="col-sm-10 mt-2 card p-2 font-weight-normal">
+          {% include "app/payment.html" %}
+        </div>
+        
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -179,7 +183,7 @@
   </div>
 </div>
 
-
+<script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
 
 <script>

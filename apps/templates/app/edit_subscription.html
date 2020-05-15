@@ -123,7 +123,7 @@
                   {% if subs.plan.get_contact %}
                   <div class="form-group">
                     <label for="exampleForm" class="font-weight-bold">Contact Information</label>
-                    {% if subs.approved %}
+                    {% if subs.status == "Active" or subs.status == "Ship"  or subs.status == "Approved" %}
                     <p class="card-text">
                         {{ subs.plan.get_contact }}
                     </p>
@@ -136,9 +136,10 @@
                   {% endif %}
 
 
-                  <div class="form-group">
-                    <button  data-toggle="modal" data-target="#exampleModalConfirm" class="btn btn-danger font-weight-bold" type="button" style="width: 200px !important;">Edit</button>
+                  <div class="form-group float-right mt-2">
                     <a  href="{% url 'Join' subs.plan.category.id subs.plan.id %}" class="btn btn-danger font-weight-bold" type="button" style="width: 200px !important;">Cancel</a>
+                    <button  data-toggle="modal" data-target="#exampleModalConfirm" class="btn btn-success font-weight-bold" type="button" style="width: 200px !important;">Edit</button>
+                    
                   </div>
                   
                   

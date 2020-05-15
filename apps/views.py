@@ -255,6 +255,7 @@ def change_password(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
+            messages.success(request, "Password has been updated successfully.")
             return HttpResponseRedirect(reverse('profile'))
     return render(request, 'music/change_password.html' , {'form': form, 'change_password_section': True})
 
@@ -519,6 +520,7 @@ def Cancel_A_Plan(request,  plan_id, sub_id ):
             content = f"""A request has been to cancel a subscription.\n
                     Following are the subscription details\n
                     Subscription user: {s.user}\n
+                    Subscription user email : {s.user.email}\n
                     Subscription Plan: {s.plan.plan_name}\n
                     Subscription Number of Slots: {s.number_of_slots}\n
                     Subscription Total Amount: {s.TotalAmount}\n 
@@ -890,6 +892,37 @@ def PrivacyPolicy(request):
     }
     return render(request, template_name, context)
 
+
+
+# ****************************************************************
+# Leave Plan Family by plan owner
+# ****************************************************************
+@login_required
+def leaveFamily(request,  cat_id, plan_id):
+    try:
+        c = category.objects.get(id = cat_id)
+        p = plan.objects.get(id = plan_id, user = User.objects.get(username = request.user.username))
+        # ****************************************************************
+        # Email Settings
+        # ****************************************************************
+        subject = 'Plan Alert [Request to Cancel]'
+        current_site = get_current_site(request)
+        build_link = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("admin:apps_plan_change", args=[p.id]))
+        content = "\nDetails Following Link\n"
+        content += f"{build_link}"
+        email = EmailMessage(subject, content, to=[  "support@circledin.io"])
+        email.send()
+        p.leaveRequest = True
+        p.save()
+        messages.success(request, "A cancel request has been sent to the admins for revsions.")
+        return redirect("plan")
+    except Exception as e:
+        print(e)
+        messages.success(request, "Requested Page Does Not Exists")
+        return render(request, 'app/error.html')
+        
+
+
 ######################## Payment ###########################3
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -899,6 +932,7 @@ from datetime import datetime
 @csrf_exempt
 def charge(request):
     if request.method == 'POST':
+        
         data = json.loads(request.body)
         paymentMethod = data['payment_method']
         customer = stripe.Customer.create(
@@ -909,6 +943,7 @@ def charge(request):
                 'default_payment_method': paymentMethod
         }
     )
+        
         subscription = stripe.Subscription.create(
         customer=customer.id,
         items=[
@@ -923,6 +958,49 @@ def charge(request):
         
         # creating user object to be saved in database
         Api_key.objects.create(user=request.user,paymentMenthod=paymentMethod,customer_Id=customer.id,subscription_ID=subscription.id)
-        # print(customer)
-        return redirect(reverse('home'))
+        return redirect('home')
     return render(request, 'app/payment.html')
+
+
+def misc(request):
+    customer = Api_key.objects.get(user=request.user)
+    invoice=stripe.Invoice.list(limit=10,customer=customer.customer_Id)
+    invoices = (invoice.data)
+    upcoming=stripe.Invoice.upcoming(customer="cus_HHJ0khDpoO5BpB")    
+    return render(request,'app/misc.html',{'upcoming':upcoming,'invoices':invoices,'customer':customer})
+
+
+
+@csrf_exempt
+def chargeupdate(request):
+    customer = Api_key.objects.get(user=request.user)
+    if request.method == 'POST':
+        
+        data = json.loads(request.body)
+        paymentMethod = data['payment_method']
+        stripe.PaymentMethod.detach(customer.paymentMenthod,
+)
+        Api_key.objects.update(user=request.user,paymentMenthod=paymentMethod)
+        
+        stripe.PaymentMethod.attach(
+        paymentMethod,
+        customer="cus_HHRGotKA8ZVdQ7",
+        )
+        subscription = stripe.Subscription.modify(
+        customer.subscription_ID,
+       
+        default_payment_method=paymentMethod
+        # billing_cycle_anchor=datetime.now(),
+
+        )
+        
+        # creating user object to be saved in database
+        return redirect('home')
+    return render(request, 'app/paymentupdate.html')
+
+
+
+
+
+def convert(time):
+    return  datetime.utcfromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S')
