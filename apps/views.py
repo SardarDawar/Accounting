@@ -1036,7 +1036,11 @@ def charge(request):
                         'default_payment_method': paymentMethod
                     }
                 )
-
+                stripe.PaymentMethod.attach(
+                paymentMethod,
+                customer=customer.id,
+                )
+                Payment_key.objects.create(user=request.user,name=details['name'],phone=details['phone'],email=details['email'],last4=card['last4'],exp_month=card['exp_month'],exp_year=card['exp_year'],payment_id=paymentMethod,default=True)
                 subscription = stripe.Subscription.create(
                     customer=customer.id,
                     items=[
@@ -1052,8 +1056,6 @@ def charge(request):
                 # creating user object to be saved in database
                 Api_key.objects.create(user=request.user, paymentMenthod=paymentMethod, customer_Id=customer.id,
                                        subscription_ID=subscription.id)
-                Payment_key.objects.create(user=request.user, name=details['name'], phone=details['phone'], email=details['email'],
-                                           last4=card['last4'], exp_month=card['exp_month'], exp_year=card['exp_year'], payment_id=paymentMethod,)
                 
         except Exception as e:
             # print("***********************************")
@@ -1098,23 +1100,27 @@ def add_card(request):
 
 
 def edit_card(request, id):
-
-    method = stripe.PaymentMethod.modify(
-        id,
-    )
-    values = method.billing_details
-    card = (method.card)
-
-    if request.method == 'POST':
+    try:
         method = stripe.PaymentMethod.modify(
             id,
-            billing_details={'name': request.POST['username'], 'email': request.POST['useremail'],
-                             'phone': request.POST['phone'], 'address': {'city': request.POST['city'], 'state': request.POST['state'], 'country': request.POST['country']}},
-            card={'exp_month': request.POST['exp_month'],
-                  'exp_year': request.POST['exp_year']}
         )
-        Payment_key.objects.filter(payment_id=id).update(name=request.POST['username'], phone=request.POST['phone'],
-                                                         email=request.POST['useremail'], exp_month=request.POST['exp_month'], exp_year=request.POST['exp_year'],)
+        values = method.billing_details
+        card = (method.card)
+
+        if request.method == 'POST':
+            method = stripe.PaymentMethod.modify(
+                id,
+                billing_details={'name': request.POST['username'], 'email': request.POST['useremail'],
+                                    'phone': request.POST['phone'], 'address': {'city': request.POST['city'], 'state': request.POST['state'], 'country': request.POST['country']}},
+                card={'exp_month': request.POST['exp_month'],
+                        'exp_year': request.POST['exp_year']}
+            )
+            Payment_key.objects.filter(payment_id=id).update(name=request.POST['username'], phone=request.POST['phone'],
+                                                                email=request.POST['useremail'], exp_month=request.POST['exp_month'], exp_year=request.POST['exp_year'],)
+    except Exception as e:
+        print(e)
+        messages.success(request, "Technical Issues, Processing...")
+        return redirect("list_card")
     return render(request, 'payment/retrieve.html', {'values': values, 'card': card , "p" : Payment_key})
 
 
@@ -1143,6 +1149,7 @@ def make_default(request, id):
             customer  = None
             card =None
     except Exception as e:
+        print(e)
         messages.success(request, "Can't make is as default right now." )
         return redirect("list_card")
         customer = None
@@ -1152,14 +1159,20 @@ def make_default(request, id):
 
 
 def delete_payment(request, id):
-    stripe.PaymentMethod.detach(id)
+    
     try:
-        if len(Payment_key.objects.filter(user  = request.user).count()) == 1:
-            pass
+        stripe.PaymentMethod.detach(id)
+        if Payment_key.objects.filter(user  = request.user).count() == 1:
+            messages.success(request, "That's only one payment method. you can't delete it." )
+            return redirect("list_card")
         else:            
             Payment_key.objects.get(payment_id=id).delete()
-    except:
-        pass
+            messages.success(request, "Successfully Deleted." )
+            return redirect("list_card")
+    except Exception as e:
+        print(e)
+        messages.success(request, "Technical Issues. Processing" )
+        return redirect("list_card")
     return render(request, 'payment/delete.html')
 
 

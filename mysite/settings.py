@@ -27,7 +27,7 @@ DEBUG = True
 
 SEND = False
 
-ALLOWED_HOSTS = ['167.172.128.142','127.0.0.1']
+ALLOWED_HOSTS = ['167.172.128.142','127.0.0.1', 'www.circledin.io']
 
 #ALLOWED_HOSTS = []
 

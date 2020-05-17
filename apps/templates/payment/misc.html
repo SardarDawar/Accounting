@@ -1,6 +1,7 @@
 {% load convert %}
 {% load humanize  %}
     <div class="mx-auto" style="width:530px !important;">
+        {% if invoices %}
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title font-weight-bold">
@@ -22,7 +23,7 @@
                        
                     </thead>
                     <tbody>
-                        {%  for i in invoices%}
+                        {%  for i in invoices %}
                         <tr>
                             <td>{{i.created | convert}}</td>
                             <td>{{i.number}}</td>
@@ -37,6 +38,8 @@
             </div>
 
         </div>
+        {% endif %}
+        {% if upcoming %}
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title font-weight-bold">
@@ -66,6 +69,7 @@
             </div>
 
         </div>
+        {% endif %}
 
 
     </div>
