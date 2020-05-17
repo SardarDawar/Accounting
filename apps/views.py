@@ -246,6 +246,10 @@ def activate(request, uidb64, token):
 # ****************************************************************
 @login_required()
 def edit_profile(request):
+    customer = None
+    invoice  = None
+    invoices  = None
+    upcoming = None
     try:
         profile = profileModel.objects.get(user=request.user)
     except profileModel.DoesNotExist:
