@@ -1,0 +1,48 @@
+{% load static %}
+    <script src="{% static 'music/client.js' %}"></script>
+    <script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
+    <script src="{% static 'music/js/popper.min.js' %}"></script>
+    <script src="{% static 'music/js/bootstrap.min.js' %}"></script>
+    <script src="{% static  'music/js/plugins.js' %}"></script>
+    <script src="{% static 'music/js/active.js' %}"></script>
+    <script src="{% static 'music/js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'music/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'music/js/script.js' %}"></script>
+    <script src="{% static 'music/js/General_script.js' %}"></script>
+    <script src="{% static 'music/js/number_of_slots_script.js' %}"></script>
+    <script src="{% static 'music/js/calculator.js' %}"></script>
+    <script src="{% static 'music/js/date_picker_Script.js' %}"></script>
+    <script src="{% static 'music/js/word_counter_script.js' %}"></script>
+    <script src="{% static 'music/js/progress_bar_script.js' %}"></script>
+    {% if error %}
+    <script>
+        $(document).ready(function () {
+            $('#exampleModal').modal('show');
+
+        });
+    </script>
+    {% endif %}
+
+
+
+
+    <script>
+        $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            e.target // newly activated tab
+            e.relatedTarget // previous active tab
+            console.log($(this).attr("id"));
+            if ($(this).attr("id") == "home-tab-2" || ($(this).attr("id") == "home-tab-2" && $(this).hasClass("active"))) {
+                $("#paymentDiv").show();
+            }
+            else if ($(this).attr("id") == "profile-tab" || ($(this).attr("id") == "profile-tab" && $(this).hasClass("active"))) {
+                $("#paymentDiv").show();
+            }
+            else if ($(this).attr("id") == "home-tab-3" || ($(this).attr("id") == "home-tab-3" && $(this).hasClass("active"))) {
+                $("#paymentDiv").show();
+            }
+            else {
+                $("#paymentDiv").hide();
+            }
+        });
+    </script>
+

@@ -1,0 +1,61 @@
+{% extends 'Base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+
+<div class="row mr-0">
+    <div class="col-md-1">
+        {% include 'music/side_bar.html' %}
+    </div>
+
+
+    <div class="col-lg-10">
+        <div class="mx-auto" style="width:700px;">
+            <div class="card" style="width: 40rem;">
+                <div class="card-header">
+                    <h5 class="card-title font-weight-bold">
+                        Payment Card Default
+
+                    </h5>
+
+                </div>
+                <div class="card-body">
+
+
+
+                   
+                        <div class="card-header text-center bg-transparent border-0">
+
+                            <label>Name:</label>{{i.name}} <br>
+                            <label>Phone:</label>{{i.phone}} <br>
+                            <label>Email:</label>{{i.email}} <br>
+
+
+
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4">
+                                    <h5> ****-****-****-{{i.last4}} </h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4"><label> Expiry Month: </label>{{i.exp_month}}</div>
+                                <div class="col-md-4"> <label>Expiry Year:</label> {{i.exp_year}} </div>
+                                <div class="col-md-4"> <label>Default:</label> {{i.default}}</div>
+                            </div>
+
+                        </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -65,11 +65,16 @@
                               <h6 class="card-title text-dark">Monthly Payment Cost: ${{ i.TotalAmount|intcomma }}</h6>
                               <h6 class="card-title text-dark">Monthly Payment Date: {{ i.plan.monthly_payment_date|findNextMonth }} {{ i.plan.monthly_payment_date }}, {{ i.plan.monthly_payment_date|findNextYear }} </h6>
                                 
-                                    <button  class="btn btn-danger ml-2 mr-0" data-toggle="modal" data-target="#exampleModalFeedback_{{ i.plan.id }}{{ i.id }}">Leave Family</button>
-                                    <a href="{% url 'EditSubscription' i.plan.id i.id %}" class="btn btn-success ml-2 mr-0">Edit</a>
+
+
+                              <a href="{% url 'EditSubscription' i.plan.id i.id %}" class="btn btn-success ml-2 mr-0">Edit</a>
+                              <a href="{% url 'Join' i.plan.category.id i.plan.id %}" class="btn btn-primary ml-2 mr-0">Details</a>
+                              
+                                    <button  class="btn btn-danger ml-2 mr-0" {% if i.leaveRequest is not True %} data-toggle="modal" data-target="#exampleModalFeedback_{{ i.plan.id }}{{ i.id }}" {% endif %}>{% if i.leaveRequest is not True %} Cancel Subscription {% else %}Requested to Cancel {% endif %}</button>
+                                    
                                 
                               
-                              <a href="{% url 'Join' i.plan.category.id i.plan.id %}" class="btn btn-primary ml-2 mr-0">Details</a>
+                              
                               </div>
                           </div>
                       </div>

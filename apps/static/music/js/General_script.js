@@ -6,7 +6,6 @@ $(document).ready(function () {
     $(".mx-auto .card").addClass("mt-5");
     $(".mx-auto .card").addClass("mb-5");
     $("label").addClass("font-weight-bold");
-
 });
 
 

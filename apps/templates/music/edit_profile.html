@@ -1,5 +1,6 @@
 {% extends 'Base.html' %}
 {% load static %}
+{% load convert %}
 {% block title %} Profile {% endblock %}
 {% block content %}
 
@@ -13,13 +14,19 @@
         -moz-appearance: textfield;
     }
 </style>
+
+{% include "payment/add_method_modal.html" %}
+
+<div class="col">
+
+
 <div class="row mr-0">
-    <div calss="col">
+    <div class="col-md-1">
         {% include 'music/side_bar.html' %}
     </div>
 
-    <div class="col">
-        <div class="mx-auto" style="width:500px;">
+    <div class="col-md-6">
+        <div class="mx-auto" style="width:400px;">
             <div class="card" style="width: 30rem;">
                 <div class="card-header"> 
                     <h5 class="card-title mb-0 font-weight-bold">
@@ -110,7 +117,18 @@
                             <a href="{% url 'edit_profile' %}" type="button" class="btn btn-danger"
                                 value="Edit Profile">Cancel </a>
                             <button type="submit" class="btn btn-success" value="Edit Profile">Edit
+                                
                                 Profile</button>
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">
+                                    Add payment Method
+                                  </button>
+                                <div class="col-sm-12">
+                                    <div class="row float-right">
+                                        <a class="btn btn-info" href="{% url 'list_card' %}">List Payment Cards </a>
+                                    </div>
+                                </div>
+                                
+                                  
                         </p>
                     </form>
 
@@ -121,9 +139,13 @@
         </div>
 
     </div>
-
+    <div class="col-lg-3">
+        {% include "payment/misc.html" %}
+    </div>
+</div>
 </div>
 <script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
 <script src="{% static 'music/js/contactNumberFormat_script.js' %}"></script>
 <script src="{% static 'music/js/register_form_validation.js' %}"></script>
+<script src="https://js.stripe.com/v3/"></script>
 {% endblock content %}

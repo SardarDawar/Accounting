@@ -23,7 +23,7 @@
 }
   </style>
 
-<div class="card mt-5 mb-5" style="width: 38rem; margin-bottom: 0px !important;">
+<div class="card ml-3" style="width: 38rem; margin-bottom: 0px !important; margin-top: 0px !important;">
   <div class="card-body">
     <h5 class="card-title alert-warning p-3">Join : {{ plan.plan_name }}</h5>
     <p class="card-title font-weight-bold" id="payment" style="font-size: 20px;"
@@ -120,10 +120,10 @@
       {% if plan.user != request.user %}
       {% if request.user|FindSubUser:plan.id %}
 
-      <div class="form-group">
-        <a href="{% url 'EditSubscription' plan.id request.user|findFindSubID:plan.id %}" class="btn btn-danger"
+      <div class="form-group text-right">
+        <a href="{% url 'EditSubscription' plan.id request.user|findFindSubID:plan.id %}" class="btn btn-success font-weight-bold"
           type="button">Edit Subscription</a>
-        <small id="emailHelp" class="form-text text-muted">You won't be charged yet.</small>
+        
       </div>
       {% else %}
       <div class="form-group">
@@ -139,10 +139,10 @@
       </div>
       {% endif %}
       {% elif request.user|FindSubUser:plan.id %}
-      <div class="form-group">
-        <a href="{% url 'EditSubscription' plan.id request.user|findFindSubID:plan.id %}" class="btn btn-danger"
+      <div class="form-group text-right">
+        <a href="{% url 'EditSubscription' plan.id request.user|findFindSubID:plan.id %}" class="btn btn-success font-weight-bold"
           type="button">Edit Subscription</a>
-        <small id="emailHelp" class="form-text text-muted">You won't be charged yet.</small>
+        
       </div>
       {% endif %}
       {% endif %}

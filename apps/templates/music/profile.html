@@ -1,5 +1,6 @@
 {% extends 'Base.html' %}
 {% load static %}
+{% load convert %}
 {% block title %} {{ user.username }}  {% endblock %}
 
 
@@ -39,7 +40,12 @@
             </div>
         </div>
     </div>
+    <div class="col">
+        {% include "payment/misc.html" %}
+    </div>
 
 </div>
+
+
 
 {% endblock content %}

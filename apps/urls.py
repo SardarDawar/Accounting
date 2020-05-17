@@ -143,7 +143,11 @@ urlpatterns = [
     # Payment Method Goes Here
     # ****************************************************************
     path('misc', views.misc, name="misc"),
-    path('update', views.chargeupdate, name="update"),
+    url(r'^edit_card/(?P<id>\w+)/$', views.edit_card, name="edit_card"),
+    url(r'^delete_payment/(?P<id>\w+)/$', views.delete_payment, name="delete_payment"),
+    url(r'^make_default/(?P<id>\w+)/$', views.make_default, name="make_default"),
+    path('add_card', views.add_card, name="add_card"),
+    path('list_card', views.list_card, name="list_card"),
     path('charge', views.charge, name="charge"),
 
     # ****************************************************************

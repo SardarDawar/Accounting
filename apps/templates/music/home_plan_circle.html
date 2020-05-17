@@ -1,0 +1,48 @@
+{% load static humanize FindSubUser findNextYear findNextMonth %}
+
+<div class="col-md-4 mb-4">
+    <div class="flip-card bg-transparent">
+        <div class="flip-card-inner bg-transparent">
+            <div class="flip-card-front {% if request.user.is_authenticated %} {% if request.user|FindSubUser:j.id %} bg-warning {% else %} {% if j.get_available_status %} bg-success {% else %} bg-danger {% endif %}{% endif %} {% else %} {% if j.get_available_status %} bg-success {% else %} bg-danger {% endif %} {% endif %}text-white font-weight-bold text-center pt-0"
+                style="width:300px !important; height: 300px !important; border-radius: 50% !important;">
+                <h6 class="card-title text-white" style="margin-top: 50%; margin-bottom: 50%;">Plan Name:
+                    {{ j.plan_name }}
+                </h6>
+            </div>
+            <div class="flip-card-back {% if request.user.is_authenticated %} {% if request.user|FindSubUser:j.id %} bg-warning {% else %} {% if j.get_available_status %} bg-success {% else %} bg-danger {% endif %}{% endif %} {% else %} {% if j.get_available_status %} bg-success {% else %} bg-danger {% endif %} {% endif %} text-white font-weight-bold text-center pt-0"
+                style="width:300px !important; height: 300px !important; border-radius: 50% !important;">
+                <h6 class="card-title text-white" style="margin-top: 25%;">Plan Name: {{ j.plan_name }}</h6>
+                <h6 class="card-title text-white">Family Name: {{ j.family_name }}</h6>
+                <h6 class="card-title text-white">Number of Available Slots: {{ j.total_slots }}</h6>
+                <h6 class="card-title text-white">Monthly Payment Date:{{ request.user|findNextMonth }}
+                    {{ j.monthly_payment_date }}, {{ request.user|findNextYear }}</h6>
+                <h6 class="card-title text-white">Monthly Cost: ${{ j.currently_monthly_payment_per_line|intcomma }}
+                </h6>
+                {% if request.user.is_authenticated %}
+                {% if request.user|FindSubUser:j.id %}
+                <a href="{% url 'Join' i.id j.id %}" class="btn btn-secondary alert-link mr-0">Plan Details</a>
+                {% else %}
+                {% if j.get_available_status %}
+                {% if request.user == j.user %}
+                <a href="{% url 'Join' i.id j.id %}" class="btn btn-secondary alert-link mr-0">See Details</a>
+                {% else %}
+                <a href="{% url 'Join' i.id j.id %}" class="btn btn-secondary alert-link mr-0">Join</a>
+                {% endif %}
+
+                {% else %}
+                <a href="#" class="btn btn-secondary stretched-link mr-0">Full</a>
+                {% endif %}
+                {% endif %}
+                {% else %}
+                {% if j.get_available_status %}
+
+                <a href="{% url 'Join' i.id j.id %}" class="btn btn-secondary alert-link mr-0">Join</a>
+
+                {% else %}
+                <a href="#" class="btn btn-secondary stretched-link mr-0">Full</a>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

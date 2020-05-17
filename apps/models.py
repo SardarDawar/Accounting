@@ -8,6 +8,9 @@ from django.dispatch import receiver
 from django.contrib.auth.hashers import make_password
 import datetime
 from datetime import date
+from django.core.exceptions import *
+
+
 # ****************************************************************
 # Subscription Choices
 # ****************************************************************
@@ -62,7 +65,16 @@ class category(models.Model):
         return self.plan_set.all().filter(status="Active").order_by('number_of_open_slots')
 
 
-from django.core.exceptions import *
+# ****************************************************************
+# Plan Names for a specific category
+# ****************************************************************
+class CategoryPlanName(models.Model):
+    category = models.ForeignKey(category, on_delete= models.CASCADE)
+    name = models.CharField(verbose_name="Plan Name", max_length = 100, default="", blank=False, null=True)
+    
+    def __str__(self):
+        return f"{self.category}:{self.name}"
+
 
 class plan(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
@@ -207,3 +219,24 @@ class Api_key(models.Model):
     def __str__(self):
         return self.user.username
 
+
+
+    
+class Payment_key(models.Model):
+    user            = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    name           =models.CharField(max_length = 150)
+    phone         =models.CharField(max_length = 150)
+    email          =models.CharField(max_length = 150)
+    last4           = models.CharField(max_length = 150)
+    exp_month           = models.CharField(max_length = 150)
+    exp_year           = models.CharField(max_length = 150)
+    payment_id      = models.CharField(max_length = 150)
+    default        =models.BooleanField(default='False',blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering= ['-timestamp','-updated']

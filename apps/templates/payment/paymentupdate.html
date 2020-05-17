@@ -1,0 +1,72 @@
+{% extends 'Base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="row mr-0">
+  <div class="col-md-1">
+    {% include 'music/side_bar.html' %}
+  </div>
+
+
+  <div class="col-lg-10">
+    <div class="mx-auto" style="width:700px;">
+      <div class="card" style="width: 40rem;">
+        <div class="card-header">
+          <h5 class="card-title font-weight-bold">
+            Payment Card
+
+          </h5>
+
+        </div>
+        <div class="card-body">
+
+          <form id="subscription-form" method="POST">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <label> First Name: </label><input class="form-control" type="text" id="first_name">
+              </div>
+              <div class="col-md-6">
+                <label> Last_name: </label><input type="text" class="form-control" id="last_name">
+
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label>Phone Number:</label> <input type="text" class="form-control" id="Phone_number">
+              </div>
+              <div class="col-md-6">
+                <label> city: </label><input type="text" class="form-control" id="City">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label>State:</label><input type="text" class="form-control" id="State">
+              </div>
+              <div class="col-md-6">
+                <label>Country:</label><input type="text" class="form-control" id="Country">
+              </div>
+            </div>
+            <label>Card Details</label><br>
+            <img src="{% static 'payments.png' %}"><br><br>
+
+            <div id="card-element">
+            </div>
+            <div id="card-errors" role="alert"></div><br>
+            <button type="submit" class="btn btn-primary">ADD</button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'music/update.js' %}"></script>
+
+{% endblock %}
+
+<!-- 4000008260003178 -->

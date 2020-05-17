@@ -34,4 +34,5 @@ my_admin_site.register(plan, planAdmin)
 my_admin_site.register(subscription, subscriptionAdmin)
 my_admin_site.register(commentPlan)
 my_admin_site.register(Api_key)
-
+my_admin_site.register(CategoryPlanName)
+my_admin_site.register(Payment_key)

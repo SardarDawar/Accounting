@@ -5,36 +5,8 @@
 
 
 <script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
-<script>
-    function updateLine(){
-      var v = $("#id_currently_monthly_payment_per_line").val().trim();
-      if (v.length == 0)
-      {
-        $("#currentLinePayment").hide();
-      }
-      else{
-        $("#currentLinePayment").show();
-      }
-      var c =  $("#id_category :selected").text();
-      var j  = 0
-      if (c == "VERIZON")
-      {
-        j = ( v-30 )*12;
-      }
-      else if(c == "T-MOBILES")
-      {
-        j = ( v-28 )*12;
-      }
-      else if(c == "AT-T")
-      {
-        j = ( v-35 )*12;
-      }
-      
-      var r  ="Great! We can save you about $" +  j + " per line a year."
-      $("#currentLinePayment").html(r);
-    }
-  </script>
-  
+<script src="{% static 'music/js/plan_creation_select_plan_name.js' %}"></script>
+<script src="{% static 'music/js/monthly_payment_line_update.js' %}"></script>
 
 
 
@@ -84,11 +56,41 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label>Category</label>
-                                {{  form.category }}
-                            </div>
-                            <div class="form-group">
+              
+                                {% if categories %}
+                                <select name="category" required="" id="id_category" class="form-control" onchange="updateLine();">
+                                  <option value="False" hidden disabled>Select</option>
+                                  {% for category in categories %}
+                                  <option value="{{ category.id }}" onclick="PlanCreationFunction('{{ category.slug }}', '{{ category.id }}');">{{ category.slug|upper   }}</option>
+                                  {% endfor %}
+                                  
+                                </select>
+              
+                              </div>
+                              
+                              <div class="form-group" id="selectContains">
                                 <label>Plan Name</label>
-                                <input type="text" name="plan_name" maxlength="150" class="form-control" required="" {% if form.plan_name.value %}value="{{ form.plan_name.value }}"{% endif %}>
+              
+                                <select class="form-control" name="plan_name" id="id_plan_name_default" style="display: block;">
+                                    <option hidden>Select Category First</option>
+                                </select>
+                              {% for category in categories %}
+                              
+                                
+              
+                                <select class="form-control" name="plan_name" id="id_plan_name_{{ category.slug }}" data-target="Verizon"
+                                  style="display: none;">
+                                  
+                                  {% for j in category.categoryplanname_set.all %}
+                                    <option value="{{ j.name }}">{{ j.name }}</option>
+                                  {% endfor %}
+                                </select>
+              
+                              
+                              
+                              {% endfor %}
+                              {% endif %}
+                              
                             </div>
 
                             
@@ -117,9 +119,14 @@
                             </div>
                             <div class="form-group">
                                 <label>How much are you currently paying per line?</label>
-                                <input type="number" name="currently_monthly_payment_per_line" maxlength="150" {% if form.currently_monthly_payment_per_line.value %}value="{{ form.currently_monthly_payment_per_line.value }}"{% endif %}
-                                    class="form-control" required="">
-                            </div>
+                                <input type="number" name="currently_monthly_payment_per_line" maxlength="150"
+                                  id="id_currently_monthly_payment_per_line" {% if form.currently_monthly_payment_per_line.value %}
+                                  value="{{ form.currently_monthly_payment_per_line.value}}" {% endif %} class="form-control"
+                                  required="" onkeyup="updateLine()">
+                              </div>
+                              <div class="form-group">
+                                <label class="text-danger card-text" id="currentLinePayment" style="display: none;"></label>
+                              </div>
                             <div class="form-group">
                                 <label>Current Family Size</label>
                                 <input type="number" name="currentFamilySize" maxlength="3"

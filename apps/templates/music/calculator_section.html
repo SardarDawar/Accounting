@@ -1,0 +1,74 @@
+{% load static humanize FindSubUser findNextYear findNextMonth %}
+<div class="mx-auto" style="width:900px;">
+    <div class="card mt-5 border-0" style="width: 60rem; box-shadow: none !important;">
+      <div class="card-body">
+  
+        <div class="row">
+          <div class="col ml-3">
+            <div class="row">
+              <h5 class="card-title">Current Carrier</h5>
+            </div>
+            <div class="row">
+              <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-secondary mr-2">
+                  <input type="radio" name="options" id="options1" value="1" data-url="3210" onchange="updateSlider();">
+                  Verizon
+  
+                </label>
+                <label class="btn btn-outline-secondary mr-2">
+                  <input type="radio" name="options" id="options2" value="2" data-url="321"
+                    onchange="updateSlider();">T-Mobile
+  
+                </label>
+                <label class="btn btn-outline-secondary">
+                  <input type="radio" name="options" id="options3" value="3" data-url="231" onchange="updateSlider();">
+                  AT&T
+  
+                </label>
+              </div>
+  
+            </div>
+  
+  
+            <div class="row">
+              <div class="col-md-8">
+                <label for="customRange1" class="mt-2 pl-0">Number of Users on the Account</label>
+                <p for="foo" class="font-weight-bold rounded p-1 pl-0" style="position: relative; border-radius: 50%;">
+                </p>
+                <input type="range" class="custom-range" name="accounts" id="customRange1" min="1" max="10" value="1"
+                  onchange="updateSlider();">
+  
+  
+              </div>
+  
+  
+            </div>
+            <div class="row mt-2">
+              <h5 class="card-title">Total Plan Cost (US Dollars)</h5>
+            </div>
+            <div class="row mt-1">
+              <div class="col-md-5 pl-5">
+                <input type="number" class="form-control" name="totalcostAmount" onkeyup="updateSlider();">
+              </div>
+            </div>
+  
+          </div>
+          <div class="col">
+            <div class="row pt-0">
+              <div class="card bg-success text-white font-weight-bold text-center pt-0 mt-0"
+                style="width:300px !important; height: 300px !important; border-radius: 50% !important; margin-top: 0 !important; margin-bottom: 0px !important;">
+                <div class="card-body mt-5 text-center">
+                  <h4 class="card-title text-white mb-5">Savings</h4>
+                  <h4 class="card-title text-white" id="savings_amount"> $21231321/yr</h4>
+  
+                </div>
+  
+              </div>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,81 @@
+<header class="header-area">
+    <div class="clever-main-menu">
+        <div class="classy-nav-container breakpoint-off">
+            <!-- Menu -->
+            <nav class="classy-navbar justify-content-between mb-2 shadow" id="cleverNav">
+
+                <!-- Logo -->
+                <a class="nav-brand" href="{% url 'home' %}"><strong>Mobiles</strong></a>
+
+                <!-- Navbar Toggler -->
+                <div class="classy-navbar-toggler">
+                    <span class="navbarToggler"><span></span><span></span><span></span></span>
+                </div>
+
+                <!-- Menu -->
+                <div class="classy-menu">
+
+                    <!-- Close Button -->
+                    <div class="classycloseIcon">
+                        <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                    </div>
+
+                    <!-- Nav Start -->
+                    <div class="classynav">
+                        <ul>
+
+
+
+                            <li><a href="{% url 'home' %}">Home</a></li>
+                            {% if request.user.is_authenticated %}
+
+
+                            <li><a href="{% url 'edit_profile'  %}">My Profile</a></li>
+
+
+                            {% endif %}
+
+
+                            <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                            <li><a href="{% url 'About' %}">About Us</a></li>
+                            <li><a href="{% url 'FAQ' %}">FAQ</a></li>
+
+                        </ul>
+
+                        <!-- Search Button -->
+                        <div class="search-area">
+                            <form action="{% url 'search' %}" method="GET">
+                                {% csrf_token %}
+                                <input type="text" name="query" placeholder="Search">
+                                <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </form>
+                        </div>
+
+                        <!-- Register / Login -->
+                        {% block register %}
+
+                        <div class="register-login-area">
+                            {% if request.user.is_authenticated %}
+                            <a href="{% url 'profile' %}" class="btn">
+                                {% if request.user.first_name %}
+                                {{ request.user.first_name }}
+                                {% else %}
+                                {{ request.user.username }}
+                                {% endif %}
+                            </a>
+
+
+                            <a href="{% url 'logout' %}" class="btn">logout</a>
+                            {% else %}
+                            <a href="{% url 'register' %}" class="btn">Register</a>
+                            <a href="{% url 'login' %}" class="btn">Login</a>
+                            {% endif %}
+                        </div>
+                        {%  endblock %}
+                    </div>
+                    <!-- Nav End -->
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>

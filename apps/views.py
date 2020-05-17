@@ -1,3 +1,9 @@
+import sys
+from datetime import datetime
+import json
+from django.views.decorators.csrf import csrf_exempt
+import stripe
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -25,13 +31,13 @@ import sendgrid
 import os
 from sendgrid.helpers.mail import *
 
-sg = sendgrid.SendGridAPIClient(api_key='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')
+sg = sendgrid.SendGridAPIClient(
+    api_key='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')
 from_email = Email("futuresoftcode@gmail.com")
-
-
 from .models import *
-
+stripe.api_key = settings.STRIPE_SECRET_KEY
 ##################################################################################
+
 
 def handler404(request):
     return render(request, '404.html', status=404)
@@ -42,18 +48,19 @@ def handler404(request):
 # ****************************************************************
 def home(request):
     form = planForm()
-    error= None
+    error = None
     if request.method == "POST":
-        form= planForm(request.POST)
+        form = planForm(request.POST)
         try:
             if form.is_valid():
                 new = form.save(commit=False)
-                new.user=request.user
+                new.user = request.user
                 new.number_of_open_slots = new.total_slots
                 new.save()
                 form.save()
                 current_site = get_current_site(request)
-                build_link = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("plandetail", args=[new.id]))
+                build_link = str(request.scheme) + "://" + str(current_site.domain) + \
+                    str(reverse("plandetail", args=[new.id]))
                 subject = 'New Plan [Alert]'
                 content = f"Details of the new plan as follows:\n"
                 content += f"Plan Creator Name : {new.user.username}\n"
@@ -63,24 +70,26 @@ def home(request):
                 content += f"Plan Creation Timestamp : {new.created}\n"
                 content += f"Plan Details Link\n"
                 content += str(build_link)
-                email = EmailMessage(subject, content, to=[ "support@circledin.io"])
+                email = EmailMessage(subject, content, to=[
+                                     "support@circledin.io"])
                 email.send()
-                messages.success(request, "Plan has been created successfully and has been sent to the Admin for revisions.")
+                messages.success(
+                    request, "Plan has been created successfully and has been sent to the Admin for revisions.")
                 return redirect("Plans")
             else:
                 error = True
         except Exception as e:
             print(e)
-    value=plan.objects.all().filter(status = "Active")
+    value = plan.objects.all().filter(status="Active")
     if request.GET.get("category"):
         if request.GET.get("category") == "All":
             categories = category.objects.all()
-        else:    
-            categories = category.objects.filter(Name = request.GET['category'])
+        else:
+            categories = category.objects.filter(Name=request.GET['category'])
     else:
         categories = category.objects.all()
     # print(categories)
-    return render(request, 'music/home.html',{'value':value, 'categories': categories,  'form':form, 'error' : error, 'filters': category.objects.all()} )
+    return render(request, 'music/home.html', {'value': value, 'categories': categories,  'form': form, 'error': error, 'filters': category.objects.all()})
 
 # ****************************************************************
 # User Dashboard
@@ -88,11 +97,11 @@ def home(request):
 @login_required()
 def dashboard(request):
     obj = subscription.objects.filter(
-        user = User.objects.get(username=request.user.username)
+        user=User.objects.get(username=request.user.username)
     ).order_by('-number_of_slots')
-    context={
-        'obj' : obj,
-        'dashboard_section':True
+    context = {
+        'obj': obj,
+        'dashboard_section': True
     }
     return render(request, 'music/dashboard.html', context)
 
@@ -101,27 +110,31 @@ def dashboard(request):
 # Login User View
 # ****************************************************************
 def login_user(request):
-    if request.method!= 'POST':
+    if request.method != 'POST':
         form = loginForm()
     else:
         form = loginForm(request.POST)
-        valuenext= request.POST.get('next')
+        valuenext = request.POST.get('next')
         if form.is_valid():
-            user = authenticate(request, username = form.cleaned_data['username'], password = form.cleaned_data['password'])
+            user = authenticate(
+                request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             if user is not None:
                 login(request, user)
                 if len(valuenext) != 0 and valuenext is not None:
-                    return redirect(valuenext)   
-                else: 
+                    return redirect(valuenext)
+                else:
                     return redirect('home')
             else:
-                messages.warning(request, 'Usename or password may have been entered incorrectly.')
+                messages.warning(
+                    request, 'Usename or password may have been entered incorrectly.')
                 return redirect('login')
-    return render(request, 'music/login.html', {'form' : form})
+    return render(request, 'music/login.html', {'form': form})
 
 # ****************************************************************
 # Logout User View
 # ****************************************************************
+
+
 def logout_user(request):
     logout(request)
     return redirect('home')
@@ -132,23 +145,33 @@ def logout_user(request):
 @login_required
 def profile_user(request):
     try:
-        profile = profileModel.objects.get(user = User.objects.get(username= request.user.username))
+        profile = profileModel.objects.get(
+            user=User.objects.get(username=request.user.username))
         contactNumber = profile.contactNumber
+        
     except profileModel.DoesNotExist:
         profile = None
         contactNumber = None
+    customer = Api_key.objects.get(user=request.user)
+    invoice = stripe.Invoice.list(limit=10, customer=customer.customer_Id)
+    invoices = (invoice.data)
+    upcoming = stripe.Invoice.upcoming(customer="cus_HHJ0khDpoO5BpB")
+    print(customer)
     context = {
-        'contactNumber' : contactNumber,
-        'section_profile' : True
+        'contactNumber': contactNumber,
+        'section_profile': True,
+        'upcoming': upcoming, 
+        'invoices': invoices, 
+        'customer': customer
     }
     return render(request, 'music/profile.html', context)
 
 
 # ****************************************************************
 # User Registration View
-# ****************************************************************    
+# ****************************************************************
 def register_user(request):
-    if request.method!='POST':
+    if request.method != 'POST':
         form = registerForm()
         form_2 = profileInformForm()
     else:
@@ -161,7 +184,7 @@ def register_user(request):
             user.set_password(form.cleaned_data['password2'])
             user.email = form.cleaned_data['email']
             user.save()
-            profile = profileModel.objects.create(user = user)
+            profile = profileModel.objects.create(user=user)
             profile.contactNumber = form_2.cleaned_data['contactNumber']
             profile.save()
             current_site = get_current_site(request)
@@ -169,10 +192,10 @@ def register_user(request):
             if len(valuenext) == 0 or valuenext is None:
                 valuenext = None
             content = render_to_string('music/acc_active_email.html', {
-                'user':user, 'domain':current_site.domain,
+                'user': user, 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': account_activation_token.make_token(user),
-                'valuenext' : valuenext
+                'valuenext': valuenext
             })
             subject = 'Activate your account.'
             to_email = (form.cleaned_data.get('email'))
@@ -183,8 +206,8 @@ def register_user(request):
             # sg.client.mail.send.post(request_body=mail.get())
             email = EmailMessage(subject, content, to=[to_email])
             email.send()
-            return render(request, 'music/acc_active_email_confirm.html', {'email' : to_email})
-    return render(request, 'music/register.html', {'form' : form, 'form_2' : form_2})
+            return render(request, 'music/acc_active_email_confirm.html', {'email': to_email})
+    return render(request, 'music/register.html', {'form': form, 'form_2': form_2})
 
 
 # ****************************************************************
@@ -201,11 +224,11 @@ def activate(request, uidb64, token):
         user.save()
         current_site = get_current_site(request)
         subject = 'A new User has been registered'
-        u = User.objects.filter(is_superuser = True)
-        content =f'A new user has been registerd\nDetails of the newly registered as follows:\nName:{user.username}\nEmail Address:{user.email}'
-        email = EmailMessage(subject, content, to=[ "support@circledin.io"])
+        u = User.objects.filter(is_superuser=True)
+        content = f'A new user has been registerd\nDetails of the newly registered as follows:\nName:{user.username}\nEmail Address:{user.email}'
+        email = EmailMessage(subject, content, to=["support@circledin.io"])
         email.send()
-        login(request, user, backend  = 'django.contrib.auth.backends.ModelBackend')
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         # print(request.GET)
         try:
             n = request.GET.get("next", None)
@@ -213,7 +236,7 @@ def activate(request, uidb64, token):
                 return redirect(n)
             else:
                 return redirect('home')
-        except:        
+        except:
             return redirect('home')
     else:
         return HttpResponse('Activation link is invalid!')
@@ -225,59 +248,79 @@ def activate(request, uidb64, token):
 def edit_profile(request):
     try:
         profile = profileModel.objects.get(user=request.user)
-    except profileModel.DoesNotExist :
+    except profileModel.DoesNotExist:
         profile = profileModel.objects.create(user=request.user)
         profile.save()
-    if request.method!='POST':
-        form = EditProfileForm(instance = request.user)
+    if request.method != 'POST':
+        form = EditProfileForm(instance=request.user)
         form_2 = EditprofileInformForm(instance=profile)
+        try:
+            customer = Api_key.objects.filter(user=request.user)
+            if len(customer) != 0:
+                customer = customer[0]
+                invoice = stripe.Invoice.list(limit=10, customer=customer.customer_Id)
+                invoices = (invoice.data)
+                upcoming = stripe.Invoice.upcoming(customer=customer.customer_Id)
+        except:
+            customer = None
+            invoice  = None
+            invoices  = None
+            upcoming = None
+        
     else:
         # print(request.POST)
-        form_2 = EditprofileInformForm(request.POST,instance=profile)
-        form = EditProfileForm(request.POST, instance = request.user)
+        form_2 = EditprofileInformForm(request.POST, instance=profile)
+        form = EditProfileForm(request.POST, instance=request.user)
         if form.is_valid() and form_2.is_valid():
             form.save()
             form_2.save()
             messages.success(request, "Profile has been updated successfully.")
             return HttpResponseRedirect(reverse('edit_profile'))
     # print(form_2.errors)
-    return render(request, 'music/edit_profile.html',{'form' : form, 'profile':profile, 'form_2':form_2, 'edit_profile': True})
+    return render(request, 'music/edit_profile.html', {'form': form, 'profile': profile, 'form_2': form_2, 'edit_profile': True, 'upcoming': upcoming, 
+        'invoices': invoices, 
+        'customer': customer})
 
 # ****************************************************************
 # Change Password View
 # ****************************************************************
 @login_required()
 def change_password(request):
-    if request.method!='POST':
-        form = PasswordChangeForm(user = request.user)
+    if request.method != 'POST':
+        form = PasswordChangeForm(user=request.user)
     else:
-        form = PasswordChangeForm(data = request.POST, user = request.user)
+        form = PasswordChangeForm(data=request.POST, user=request.user)
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            messages.success(request, "Password has been updated successfully.")
+            messages.success(
+                request, "Password has been updated successfully.")
             return HttpResponseRedirect(reverse('profile'))
-    return render(request, 'music/change_password.html' , {'form': form, 'change_password_section': True})
+    return render(request, 'music/change_password.html', {'form': form, 'change_password_section': True})
 
 # ****************************************************************
-# Contact Form 
+# Contact Form
 # ****************************************************************
+
+
 def contact(request):
-    if request.method!='POST':
+    if request.method != 'POST':
         form = contactForm()
     else:
         form = contactForm(request.POST)
         if form.is_valid():
-            mail_subject = 'Contact -- By -- ' + form.cleaned_data.get('userName')
+            mail_subject = 'Contact -- By -- ' + \
+                form.cleaned_data.get('userName')
             email = form.cleaned_data.get('email')
             message = f"\nMessage\n"
             body = form.cleaned_data.get('body')
             message += f"{body}"
             message += f"\nUser's email address: {email}"
-            email = EmailMessage(mail_subject, message, to=["support@circledin.io"])
+            email = EmailMessage(mail_subject, message, to=[
+                                 "support@circledin.io"])
             email.send()
-            context={
-                'form' : contactForm(),
+            context = {
+                'form': contactForm(),
                 'send_successfull_contact': True
             }
             try:
@@ -289,7 +332,7 @@ def contact(request):
             except Exception as e:
                 # print(e)
                 return render(request, 'music/contact.html', context)
-    context= {'form' : form}
+    context = {'form': form}
     return render(request, 'music/contact.html', context)
 
 
@@ -300,8 +343,8 @@ def search(request):
     if query is not None:
         search_user = search_user.filter(
             Q(user__username__icontains=query) |
-            Q(contactNumber__icontains=query) 
-    
+            Q(contactNumber__icontains=query)
+
 
         )
     # print(query)
@@ -310,8 +353,8 @@ def search(request):
     context = {
 
         'search_user': search_user,
-        'query':query
-     
+        'query': query
+
     }
 
     return render(request, 'music/search.html', context)
@@ -322,17 +365,18 @@ def search(request):
 # ****************************************************************
 @login_required
 def planFormView(request):
-    form   =    planForm()
-    if request.method== 'POST':
-        form= planForm(request.POST)
+    form = planForm()
+    if request.method == 'POST':
+        form = planForm(request.POST)
         if form.is_valid():
             new = form.save(commit=False)
-            new.user=request.user
+            new.user = request.user
             new.number_of_open_slots = new.total_slots
             new.save()
             form.save()
             current_site = get_current_site(request)
-            build_link = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("admin:apps_plan_change", args=[new.id]))
+            build_link = str(request.scheme) + "://" + str(current_site.domain) + \
+                str(reverse("admin:apps_plan_change", args=[new.id]))
             subject = 'New Plan [Alert]'
             content = f"Details of the new plan as follows:\n"
             content += f"Plan Creator Name : {new.user.username}\n"
@@ -342,32 +386,37 @@ def planFormView(request):
             content += f"Plan Creation Timestamp : {new.created}\n"
             content += f"Plan Details Link\n"
             content += str(build_link)
-            email = EmailMessage(subject, content, to=[ "support@circledin.io"])
+            email = EmailMessage(subject, content, to=["support@circledin.io"])
             email.send()
-            messages.success(request, "Plan has been added to your plan list and has been sent to the Admin for revisions.")
+            messages.success(
+                request, "Plan has been added to your plan list and has been sent to the Admin for revisions.")
             return redirect('plan')
     context = {
-        'form':form,
+        'form': form,
+        'categories': category.objects.all(),
         'section_add_a_new_plan': True
     }
-    return render(request,'app/form_plan.html',context)
+    return render(request, 'app/form_plan.html', context)
+
 
 @login_required
-def planEditFormView(request,id):
+def planEditFormView(request, id):
     try:
-        obj    =    plan.objects.get(id=id)
-        if obj.user == User.objects.get(username = request.user.username):
-            form   =    planForm(instance=obj)
-            if request.method== 'POST':
-                form= planForm(request.POST,instance=obj)
+        obj = plan.objects.get(id=id)
+        if obj.user == User.objects.get(username=request.user.username):
+            form = planForm(instance=obj)
+            if request.method == 'POST':
+                form = planForm(request.POST, instance=obj)
                 if form.is_valid():
                     new = form.save(commit=False)
-                    new.user=request.user
+                    new.user = request.user
                     new.save()
                     form.save()
                     current_site = get_current_site(request)
-                    build_link = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("admin:apps_plan_change", args=[new.id]))
-                    build_link_2 = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("admin:apps_plan_history", args=[new.id]))
+                    build_link = str(request.scheme) + "://" + str(current_site.domain) + \
+                        str(reverse("admin:apps_plan_change", args=[new.id]))
+                    build_link_2 = str(request.scheme) + "://" + str(current_site.domain) + str(
+                        reverse("admin:apps_plan_history", args=[new.id]))
                     subject = 'Edit Existing Plan [Alert]'
                     content = f"Details of the Edit plan as follows:\n"
                     content += f"Plan Editor Name : {new.user.username}\n"
@@ -377,16 +426,18 @@ def planEditFormView(request,id):
                     content += f"Plan Updated Timestamp : {timezone.now()}\n"
                     content += f"Plan Details Link\n"
                     content += f"{str(build_link)}\n"
-                    email = EmailMessage(subject, content, to=[ "support@circledin.io"])
+                    email = EmailMessage(subject, content, to=[
+                                         "support@circledin.io"])
                     email.send()
-                    messages.success(request, "Plan has been edited successfully.")
+                    messages.success(
+                        request, "Plan has been edited successfully.")
                     return redirect('Plans')
             context = {
-                'form':form,
-                'object':obj,
-                'list_plans_section' : True
+                'form': form,
+                'object': obj,
+                'list_plans_section': True
             }
-            return render(request,'app/form_edit_plan.html',context)
+            return render(request, 'app/form_edit_plan.html', context)
         else:
             messages.success(request, "Does Not have access.")
             return render(request, 'app/error.html')
@@ -394,40 +445,42 @@ def planEditFormView(request,id):
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
 
+
 @login_required
 def planList(request):
-    plans  = plan.objects.filter(user=request.user).order_by('number_of_open_slots')
-     
-    context = {
-        'plans':plans,
-        'list_plans_section' :True
-    }
-
-    return render(request,'app/list_plan.html',context)
-
-@login_required
-def plandetail(request,id):
-    obj    =    plan.objects.get(id=id)
+    plans = plan.objects.filter(
+        user=request.user).order_by('number_of_open_slots')
 
     context = {
-        'obj':obj,
+        'plans': plans,
+        'list_plans_section': True
     }
-    return render(request,'app/plan_detail.html',context)
+
+    return render(request, 'app/list_plan.html', context)
+
 
 @login_required
-def delete_view(request, id): 
-    context ={} 
-    obj = plan.objects.get( id = id) 
-  
-    if request.method =="POST": 
-        obj.delete() 
-        return redirect("dashboard") 
-  
-    return render(request, "app/delete_view.html", context) 
+def plandetail(request, id):
+    obj = plan.objects.get(id=id)
+
+    context = {
+        'obj': obj,
+    }
+    return render(request, 'app/plan_detail.html', context)
 
 
+@login_required
+def delete_view(request, id):
+    context = {}
+    obj = plan.objects.get(id=id)
 
-    
+    if request.method == "POST":
+        obj.delete()
+        return redirect("dashboard")
+
+    return render(request, "app/delete_view.html", context)
+
+
 # ****************************************************************
 # Calculator
 # ****************************************************************
@@ -436,8 +489,7 @@ def CalculatorView(request):
     if request.method == "POST":
         print(request.POST)
     template_name = "app/calculator.html"
-    return render(request, template_name, context = {})
-
+    return render(request, template_name, context={})
 
 
 # ****************************************************************
@@ -445,8 +497,8 @@ def CalculatorView(request):
 # ****************************************************************
 def Join_A_Plan(request, category_id, plan_id):
     try:
-        c = category.objects.get(id = category_id)
-        p = plan.objects.get(id = plan_id, category = c)
+        c = category.objects.get(id=category_id)
+        p = plan.objects.get(id=plan_id, category=c)
         if request.method == "POST":
             if request.user.is_authenticated:
                 try:
@@ -454,14 +506,16 @@ def Join_A_Plan(request, category_id, plan_id):
                         user=User.objects.get(
                             username=request.user.username
                         ),
-                        plan = p
+                        plan=p
                     )
                     if status:
                         obj.number_of_slots = request.POST['number_of_slots']
-                        obj.TotalAmount = int(p.currently_monthly_payment_per_line) * int(request.POST['number_of_slots'])
+                        obj.TotalAmount = int(
+                            p.currently_monthly_payment_per_line) * int(request.POST['number_of_slots'])
                         obj.save()
                         # Reduced the plan available slots for subscription
-                        p.number_of_open_slots = int(p.number_of_open_slots)- int(request.POST['number_of_slots'])
+                        p.number_of_open_slots = int(
+                            p.number_of_open_slots) - int(request.POST['number_of_slots'])
                         p.save()
                         # ****************************************************************
                         # Email Settings
@@ -469,52 +523,58 @@ def Join_A_Plan(request, category_id, plan_id):
                         # sg.client.mail.send.post(request_body=mail.get())
                         # ****************************************************************
                         current_site = get_current_site(request)
-                        link_build = str(request.scheme) + "://" + str(current_site.domain) +  str(reverse("Details", args=[  plan_id, obj.id  ]))
+                        link_build = str(request.scheme) + "://" + str(
+                            current_site.domain) + str(reverse("Details", args=[plan_id, obj.id]))
                         to_email = (p.user.email)
                         subject = 'Subscription Alert'
                         content = f"A Subscription has been added to your plan.Kindly visit the following link to see details.\n\t{link_build}"
-                        email = EmailMessage(subject, content, to=[to_email, "support@circledin.io"])
+                        email = EmailMessage(subject, content, to=[
+                                             to_email, "support@circledin.io"])
                         email.send()
-                        messages.success(request, "Account Owner has been notified about your subscription to this plan. Thanks")
-                        return redirect(reverse("Join", args=[category_id,plan_id]))
+                        messages.success(
+                            request, "Account Owner has been notified about your subscription to this plan. Thanks")
+                        return redirect(reverse("Join", args=[category_id, plan_id]))
                     else:
-                        messages.success(request, "You have already been subscribed to this plan. Thanks")
-                        return redirect(reverse("Join", args=[category_id,plan_id]))
+                        messages.success(
+                            request, "You have already been subscribed to this plan. Thanks")
+                        return redirect(reverse("Join", args=[category_id, plan_id]))
                 except Exception as e:
                     print(e)
-                    messages.success(request, "Due to some technical reasons, subscription can not be done right now. Sorry")
-                    return redirect(reverse("Join", args=[category_id,plan_id]))
+                    messages.success(
+                        request, "Due to some technical reasons, subscription can not be done right now. Sorry")
+                    return redirect(reverse("Join", args=[category_id, plan_id]))
             else:
                 return redirect("login")
-        template_name= "app/join.html"
-        p = plan.objects.get(id = plan_id)
+        template_name = "app/join.html"
+        p = plan.objects.get(id=plan_id)
         slots = p.number_of_open_slots
         slots = [i for i in range(1, (slots) + 1)]
-        context= {
-            'slots' : slots,
+        context = {
+            'slots': slots,
             'plan': p,
-            'total' : len(slots)
+            'total': len(slots)
         }
-        return render(request, template_name, context )
+        return render(request, template_name, context)
     except (plan.DoesNotExist, category.DoesNotExist, subscription.DoesNotExist):
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
-
 
 
 # ****************************************************************
 # Calcel A Subscription (Joined Plan) Request
 # ****************************************************************
 @login_required
-def Cancel_A_Plan(request,  plan_id, sub_id ):
+def Cancel_A_Plan(request,  plan_id, sub_id):
     if request.method != "POST":
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
     try:
         p = plan.objects.get(id=plan_id)
-        s = subscription.objects.get(id = sub_id, plan = p, user=User.objects.get(username=request.user.username))
+        s = subscription.objects.get(
+            id=sub_id, plan=p, user=User.objects.get(username=request.user.username))
         current_site = get_current_site(request)
-        link_build = str(request.scheme) + "://" + str(current_site.domain) +  str(reverse("Details", args=[  plan_id, s.id  ]))
+        link_build = str(request.scheme) + "://" + str(current_site.domain) + \
+            str(reverse("Details", args=[plan_id, s.id]))
         try:
             subject = 'Subscription Alert [Request to Cancel]'
             content = f"""A request has been to cancel a subscription.\n
@@ -530,26 +590,31 @@ def Cancel_A_Plan(request,  plan_id, sub_id ):
                     Link to see the details of the subscription\n
                     {link_build}"""
             to_email = (p.user.email)
-            email = EmailMessage(subject, content, to=[to_email,"support@circledin.io"])
-            p.number_of_open_slots  = int(p.number_of_open_slots) + int(s.number_of_slots)
+            email = EmailMessage(subject, content, to=[
+                                 to_email, "support@circledin.io"])
+            # p.number_of_open_slots  = int(p.number_of_open_slots) + int(s.number_of_slots)
             p.save()
+            s.leaveRequest = True
+            s.save()
             email.send()
-            messages.success(request, "Account Owner has been notified about your request to cancel the subscription.")
+            messages.success(
+                request, "CI has been informed. Please be aware that you’ll need to pay for any outstanding cost that you have on your mobile bill before we can transfer you out of the family plan")
             return redirect("dashboard")
         except:
-            messages.success(request, "Due to some technical reasons, subscription can not be cancel right now. Sorry.")
+            messages.success(
+                request, "Due to some technical reasons, subscription can not be cancel right now. Sorry.")
             return redirect("dashboard")
     except (subscription.DoesNotExist, plan.DoesNotExist) as e:
         # print(e)/
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
-    except Exception as e :
+    except Exception as e:
         # print(e)
-        messages.success(request, "Due to some technical reasons, subscription can not be done right now. Sorry.")
+        messages.success(
+            request, "Due to some technical reasons, subscription can not be done right now. Sorry.")
         return redirect("dashboard")
-    
-    
-    
+
+
 # ****************************************************************
 # Accept Subscription Cancel Request
 # ****************************************************************
@@ -560,8 +625,9 @@ def Delete_Subscription(request, plan_id, sub_id):
         return render(request, 'app/error.html')
     else:
         try:
-            p = plan.objects.get(id =plan_id, user = User.objects.get(username = request.user.username))
-            s = subscription.objects.get( id=sub_id, plan = p)
+            p = plan.objects.get(id=plan_id, user=User.objects.get(
+                username=request.user.username))
+            s = subscription.objects.get(id=sub_id, plan=p)
             subject = 'Subscription Alert [Subscription Cancel Request Approved]'
             content = f"""A request to cancel a subscription has been approved.\n
                     Following are the subscription details\n
@@ -573,20 +639,17 @@ def Delete_Subscription(request, plan_id, sub_id):
                     Reason/Feedback:\n
                     {s.feedback}\n"""
             to_email = (s.user.email, p.user.email)
-            email = EmailMessage(subject, content, to=[to_email,"support@circledin.io"])
-            s.delete()      #Delete Subscription
+            email = EmailMessage(subject, content, to=[
+                                 to_email, "support@circledin.io"])
+            s.delete()  # Delete Subscription
             email.send()
             messages.success(request, "A Sunscription has been deleted.")
             return redirect("Plans")
         except Exception as e:
             # print(e)
-            messages.success(request, "Due to some technical reasons, subscription can not be done right now. Sorry.")
+            messages.success(
+                request, "Due to some technical reasons, subscription can not be done right now. Sorry.")
             return redirect("Plans")
-        
-
-
-
-
 
 
 
@@ -595,8 +658,9 @@ def Delete_Subscription(request, plan_id, sub_id):
 # ****************************************************************
 @login_required
 def Plans(request):
-    obj=plan.objects.filter(user=User.objects.get(username=request.user.username))
-    
+    obj = plan.objects.filter(
+        user=User.objects.get(username=request.user.username))
+
     categories = category.objects.all()
     A = []
     C = {}
@@ -606,45 +670,52 @@ def Plans(request):
             C[str(i.category.Name)].append(i)
         else:
             C[str(i.category.Name)] = [i]
-    
-    return render(request, 'app/plans.html',{'obj':obj, 'categories': categories, 'C': C, 'our_plans_section': True} )
+
+    return render(request, 'app/plans.html', {'obj': obj, 'categories': categories, 'C': C, 'our_plans_section': True})
 
 # ****************************************************************
 # Approve a subscription
 # ****************************************************************
 @login_required
-def ApproveSubscription(request, user_id, plan_id,sub_id):
+def ApproveSubscription(request, user_id, plan_id, sub_id):
     try:
-        p = plan.objects.get(user=User.objects.get(username=request.user.username), id = plan_id)
-        s = subscription.objects.get(user = User.objects.get(id=user_id), id=sub_id, plan = p)
+        p = plan.objects.get(user=User.objects.get(
+            username=request.user.username), id=plan_id)
+        s = subscription.objects.get(
+            user=User.objects.get(id=user_id), id=sub_id, plan=p)
         s.status = "Active"
         s.save()
-        messages.success(request, "Subscription has been approved succcessfully")
+        messages.success(
+            request, "Subscription has been approved succcessfully")
         # ****************************************************************
         # Email Settings
         # ****************************************************************
         subject = 'Subscription Alert'
         current_site = get_current_site(request)
-        link_build = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("Details", args=[plan_id,s.id ]))
+        link_build = str(request.scheme) + "://" + str(current_site.domain) + \
+            str(reverse("Details", args=[plan_id, s.id]))
         to_email = (s.user.email)
         content = f"A Subscription has been approved.Kindly visit the following link to see details.\n\t{link_build}"
-        email = EmailMessage(subject, content, to=[to_email, "support@circledin.io"])
+        email = EmailMessage(subject, content, to=[
+                             to_email, "support@circledin.io"])
         email.send()
         return redirect("Plans")
     except Exception as e:
         print(e)
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
-    
+
 
 # ****************************************************************
 # Disapprove a subscription
 # ****************************************************************
 @login_required
-def DisapproveSubscription(request, user_id, plan_id,sub_id):
+def DisapproveSubscription(request, user_id, plan_id, sub_id):
     try:
-        p = plan.objects.get(user=User.objects.get(username=request.user.username), id = plan_id)
-        s = subscription.objects.get(user = User.objects.get(id=user_id), id=sub_id, plan = p)
+        p = plan.objects.get(user=User.objects.get(
+            username=request.user.username), id=plan_id)
+        s = subscription.objects.get(
+            user=User.objects.get(id=user_id), id=sub_id, plan=p)
         s.status = "Inactive"
         s.save()
         messages.success(request, "Subscription has been disapproved")
@@ -653,73 +724,82 @@ def DisapproveSubscription(request, user_id, plan_id,sub_id):
         # ****************************************************************
         subject = 'Subscription Alert'
         current_site = get_current_site(request)
-        link_build = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("Details", args=[plan_id,s.id ]))
+        link_build = str(request.scheme) + "://" + str(current_site.domain) + \
+            str(reverse("Details", args=[plan_id, s.id]))
         to_email = (s.user.email)
         content = f"A Subscription has been disapproved.Kindly visit the following link to see details.\n\t{link_build}"
-        email = EmailMessage(subject, content, to=[to_email, "support@circledin.io"])
+        email = EmailMessage(subject, content, to=[
+                             to_email, "support@circledin.io"])
         email.send()
         return redirect("Plans")
     except Exception as e:
         # print(e)
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
-    
-    
+
+
 # ****************************************************************
 # Edit a Subscription
 # ****************************************************************
 @login_required
-def EditSubscription(request,plan_id,sub_id):
+def EditSubscription(request, plan_id, sub_id):
     try:
-        p = plan.objects.get(id = plan_id)
+        p = plan.objects.get(id=plan_id)
         s = subscription.objects.get(
-                    user=User.objects.get(
-                        username=request.user.username
-                    ),
-                    plan = p
-                )
+            user=User.objects.get(
+                username=request.user.username
+            ),
+            plan=p
+        )
         if request.method == "POST":
-            p.number_of_open_slots = int(p.number_of_open_slots) + int(s.number_of_slots)
+            p.number_of_open_slots = int(
+                p.number_of_open_slots) + int(s.number_of_slots)
             p.save()
             s.number_of_slots = request.POST['number_of_slots']
-            s.TotalAmount = int(p.currently_monthly_payment_per_line) * int(request.POST['number_of_slots'])
+            s.TotalAmount = int(
+                p.currently_monthly_payment_per_line) * int(request.POST['number_of_slots'])
             s.save()
             # Reduced the plan available slots for subscription
-            p.number_of_open_slots = int(p.number_of_open_slots) - int(s.number_of_slots)
+            p.number_of_open_slots = int(
+                p.number_of_open_slots) - int(s.number_of_slots)
             p.save()
             # ****************************************************************
             # Email Settings
             # ****************************************************************
             subject = 'Subscription Alert'
             current_site = get_current_site(request)
-            link_build = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("Details", args=[plan_id,s.id ]))
+            link_build = str(request.scheme) + "://" + str(current_site.domain) + \
+                str(reverse("Details", args=[plan_id, s.id]))
             to_email = (p.user.email)
             content = f"A Subscription has been modified.Kindly visit the following link to see details.\n\t{link_build}"
-            email = EmailMessage(subject, content, to=[to_email, "support@circledin.io"])
+            email = EmailMessage(subject, content, to=[
+                                 to_email, "support@circledin.io"])
             email.send()
-            messages.success(request, "Account Owner has been notified about your subscription to this plan. Thanks")
+            messages.success(
+                request, "Account Owner has been notified about your subscription to this plan. Thanks")
             return redirect("dashboard")
         else:
             # print(s)
-            template_name= "app/edit_subscription.html"
-            slots =  int(s.number_of_slots) + int(p.number_of_open_slots)
+            template_name = "app/edit_subscription.html"
+            slots = int(s.number_of_slots) + int(p.number_of_open_slots)
             total = slots
             slots = [i for i in range(1, (slots) + 1)]
-            context= {
-                'slots' : slots,
+            context = {
+                'slots': slots,
                 'plan': p,
-                'subs':s,
-                'total' : total
+                'subs': s,
+                'total': total
             }
-            return render(request, template_name, context )
-    
+            return render(request, template_name, context)
+
     except (plan.DoesNotExist, category.DoesNotExist) as e:
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
-    
+
     except Exception as e:
         print(e)
-        messages.success(request, "Due to some technical reasons, subscription can not be edited right now. Sorry")
+        messages.success(
+            request, "Due to some technical reasons, subscription can not be edited right now. Sorry")
         return redirect("dashboard")
 
 # ****************************************************************
@@ -728,36 +808,37 @@ def EditSubscription(request,plan_id,sub_id):
 @login_required
 def Detail(request, plan_id, sub_id):
     try:
-        p = plan.objects.get(id = plan_id)
-        s = subscription.objects.get(plan = p, id=sub_id)
-        if s.user == User.objects.get(username = request.user.username) or p.user == User.objects.get(username = request.user.username) :
-            template_name= "app/detail.html"
-            context= {
+        p = plan.objects.get(id=plan_id)
+        s = subscription.objects.get(plan=p, id=sub_id)
+        if s.user == User.objects.get(username=request.user.username) or p.user == User.objects.get(username=request.user.username):
+            template_name = "app/detail.html"
+            context = {
                 'plan': p,
-                'subs':s,
+                'subs': s,
             }
-            return render(request, template_name, context )
-    
+            return render(request, template_name, context)
+
     except (plan.DoesNotExist, category.DoesNotExist):
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
-    
+
     except Exception as e:
         print(e)
-        messages.success(request, "Due to some technical reasons, subscription can not be edited right now. Sorry")
+        messages.success(
+            request, "Due to some technical reasons, subscription can not be edited right now. Sorry")
         return redirect("dashboard")
-
 
 
 # ****************************************************************
 # Device Camptibility Handler View
 # ****************************************************************
 def deviceCompatibility(request):
-    if request.method== "POST":
-        messages.success(request, "Your request has been sent to your Account Owner.")
-    template_name="app/device-campatibility.html"
+    if request.method == "POST":
+        messages.success(
+            request, "Your request has been sent to your Account Owner.")
+    template_name = "app/device-campatibility.html"
     context = {
-    
+
     }
     return render(request, template_name, context)
 
@@ -766,19 +847,21 @@ def deviceCompatibility(request):
 # About Us
 # ****************************************************************
 def About(request):
-    template_name='app/about_us.html'
+    template_name = 'app/about_us.html'
     context = {
-    
+
     }
     return render(request, template_name, context)
 
 # ****************************************************************
 # FAQ
 # ****************************************************************
+
+
 def FAQ(request):
-    template_name='app/Circledin_FAQ.html'
+    template_name = 'app/Circledin_FAQ.html'
     context = {
-    
+
     }
     return render(request, template_name, context)
 
@@ -789,7 +872,8 @@ def FAQ(request):
 @login_required
 def DeletePlan(request, plan_id):
     try:
-        p = plan.objects.get(id = plan_id, user = User.objects.get(username = request.user.username))
+        p = plan.objects.get(id=plan_id, user=User.objects.get(
+            username=request.user.username))
         try:
             content = f"A request has been to cancel a plan from a {request.user.username} with the following details\n"
             content += f"Plan Owner : {request.user.username}\n"
@@ -803,35 +887,40 @@ def DeletePlan(request, plan_id):
                 # ****************************************************************
                 subject = 'Plan Alert [Cancel Request]'
                 current_site = get_current_site(request)
-                build_link = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("admin:apps_plan_change", args=[p.id]))
+                build_link = str(request.scheme) + "://" + str(current_site.domain) + \
+                    str(reverse("admin:apps_plan_change", args=[p.id]))
                 content += "\nDetails Following Link\n"
                 content += f"{build_link}"
-                email = EmailMessage(subject, content, to=[  "support@circledin.io"])
+                email = EmailMessage(subject, content, to=[
+                                     "support@circledin.io"])
                 email.send()
-                messages.success(request, "A cancel request has been sent to the admins for revsions.")
+                messages.success(
+                    request, "A cancel request has been sent to the admins for revsions.")
                 return redirect("plan")
             except Exception as e:
-                messages.success(request, "Due to some technical reasons, Plan can't be deleted right now.Sorry")
-                return redirect("plan")    
+                messages.success(
+                    request, "Due to some technical reasons, Plan can't be deleted right now.Sorry")
+                return redirect("plan")
         except Exception as e:
             print(e)
-            messages.success(request, "Due to some technical reasons, Plan can't be deleted right now.Sorry")
+            messages.success(
+                request, "Due to some technical reasons, Plan can't be deleted right now.Sorry")
             return redirect("plan")
     except Exception as e:
         print(e)
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
-    
-    
+
+
 # ****************************************************************
 # Plan Comment Add View
 # ****************************************************************
 @login_required
 def planCommentView(request, plan_id):
     try:
-        p = plan.objects.get(id = plan_id)
+        p = plan.objects.get(id=plan_id)
         if request.method != "POST":
-            return redirect(reverse("Join", args = [
+            return redirect(reverse("Join", args=[
                 p.category.id,
                 p.id
             ]))
@@ -839,26 +928,28 @@ def planCommentView(request, plan_id):
             form = planCommentForm(request.POST)
             if form.is_valid():
                 try:
-                    new = form.save(commit = False)
+                    new = form.save(commit=False)
                     new.user = request.user
                     new.plan = p
                     new.save()
                     form.save()
-                    messages.success(request, "Comment has been added successfully.")
-                    return redirect(reverse("Join", args = [
-                    p.category.id,
-                    p.id
+                    messages.success(
+                        request, "Comment has been added successfully.")
+                    return redirect(reverse("Join", args=[
+                        p.category.id,
+                        p.id
                     ]))
                 except Exception as e:
                     # print(e)
-                    messages.success(request, "Due to some technical reasons, comment can't be added right now.Sorry")
-                    return redirect(reverse("Join", args = [
-                    p.category.id,
-                    p.id
-                ]))
+                    messages.success(
+                        request, "Due to some technical reasons, comment can't be added right now.Sorry")
+                    return redirect(reverse("Join", args=[
+                        p.category.id,
+                        p.id
+                    ]))
             else:
                 messages.success(request, str(form.errors))
-                return redirect(reverse("Join", args = [
+                return redirect(reverse("Join", args=[
                     p.category.id,
                     p.id
                 ]))
@@ -868,30 +959,26 @@ def planCommentView(request, plan_id):
         return render(request, 'app/error.html')
 
 
-
-
 # ****************************************************************
 # Terms and Conditions
 # ****************************************************************
 def TermsConditions(request):
-    template_name='app/terms.html'
+    template_name = 'app/terms.html'
     context = {
-    
+
     }
     return render(request, template_name, context)
-
 
 
 # ****************************************************************
 # Privacy Policy
 # ****************************************************************
 def PrivacyPolicy(request):
-    template_name='app/privacy.html'
+    template_name = 'app/privacy.html'
     context = {
-    
+
     }
     return render(request, template_name, context)
-
 
 
 # ****************************************************************
@@ -900,107 +987,210 @@ def PrivacyPolicy(request):
 @login_required
 def leaveFamily(request,  cat_id, plan_id):
     try:
-        c = category.objects.get(id = cat_id)
-        p = plan.objects.get(id = plan_id, user = User.objects.get(username = request.user.username))
+        c = category.objects.get(id=cat_id)
+        p = plan.objects.get(id=plan_id, user=User.objects.get(
+            username=request.user.username))
         # ****************************************************************
         # Email Settings
         # ****************************************************************
         subject = 'Plan Alert [Request to Cancel]'
         current_site = get_current_site(request)
-        build_link = str(request.scheme) + "://" + str(current_site.domain) + str(reverse("admin:apps_plan_change", args=[p.id]))
+        build_link = str(request.scheme) + "://" + str(current_site.domain) + \
+            str(reverse("admin:apps_plan_change", args=[p.id]))
         content = "\nDetails Following Link\n"
         content += f"{build_link}"
-        email = EmailMessage(subject, content, to=[  "support@circledin.io"])
+        email = EmailMessage(subject, content, to=["support@circledin.io"])
         email.send()
         p.leaveRequest = True
         p.save()
-        messages.success(request, "A cancel request has been sent to the admins for revsions.")
+        messages.success(
+            request, "A cancel request has been sent to the admins for revsions.")
         return redirect("plan")
     except Exception as e:
         print(e)
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
-        
 
 
-######################## Payment ###########################3
-import stripe
-stripe.api_key = settings.STRIPE_SECRET_KEY
-from django.views.decorators.csrf import csrf_exempt
-import json
-from datetime import datetime
+# Payment ###########################3
+
 @csrf_exempt
 def charge(request):
     if request.method == 'POST':
-        
-        data = json.loads(request.body)
-        paymentMethod = data['payment_method']
-        customer = stripe.Customer.create(
-        payment_method=stripe.PaymentMethod.retrieve(paymentMethod),
-        email=request.user.email,
-        description='About Payment Plan',
-        invoice_settings={
-                'default_payment_method': paymentMethod
-        }
-    )
-        
-        subscription = stripe.Subscription.create(
-        customer=customer.id,
-        items=[
-            {
-            'plan': 'plan_HFv9CmBmgpSKED',
-            },
-        ],
-        expand=['latest_invoice.payment_intent'],
-        # billing_cycle_anchor=datetime.now(),
+        # print("*********************************")
+        # print(request.method)
+        # print("*********************************")
+        try:
+            if request.body:
+                data = json.loads(request.body)
+                paymentMethod = data['payment_method']
+                card = data['card']
+                details = data['details']
 
-        )
-        
-        # creating user object to be saved in database
-        Api_key.objects.create(user=request.user,paymentMenthod=paymentMethod,customer_Id=customer.id,subscription_ID=subscription.id)
-        return redirect('home')
-    return render(request, 'app/payment.html')
+                customer = stripe.Customer.create(
+                    payment_method=stripe.PaymentMethod.retrieve(
+                        paymentMethod),
+                    email=request.user.email,
+                    description='About Payment Plan',
+                    invoice_settings={
+                        'default_payment_method': paymentMethod
+                    }
+                )
+
+                subscription = stripe.Subscription.create(
+                    customer=customer.id,
+                    items=[
+                        {
+                            'plan': 'plan_HFv9CmBmgpSKED',
+                        },
+                    ],
+                    expand=['latest_invoice.payment_intent'],
+                    # billing_cycle_anchor=datetime.now(),
+
+                )
+
+                # creating user object to be saved in database
+                Api_key.objects.create(user=request.user, paymentMenthod=paymentMethod, customer_Id=customer.id,
+                                       subscription_ID=subscription.id)
+                Payment_key.objects.create(user=request.user, name=details['name'], phone=details['phone'], email=details['email'],
+                                           last4=card['last4'], exp_month=card['exp_month'], exp_year=card['exp_year'], payment_id=paymentMethod,)
+                
+        except Exception as e:
+            # print("***********************************")
+            # print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
+            # print("***********************************")
+            pass
+
+    return render(request, 'payment/payment.html')
 
 
 def misc(request):
-    customer = Api_key.objects.get(user=request.user)
-    invoice=stripe.Invoice.list(limit=10,customer=customer.customer_Id)
+    try:
+        customer = Api_key.objects.filter(user=request.user)
+        if len(customer) != 0:
+            customer = customer[0]
+    except:
+        pass
+    # customer = Api_key.objects.get(user=request.user)
+    invoice = stripe.Invoice.list(limit=10, customer=customer.customer_Id)
     invoices = (invoice.data)
-    upcoming=stripe.Invoice.upcoming(customer="cus_HHJ0khDpoO5BpB")    
-    return render(request,'app/misc.html',{'upcoming':upcoming,'invoices':invoices,'customer':customer})
-
+    upcoming = stripe.Invoice.upcoming(customer="cus_HHJ0khDpoO5BpB")
+    return render(request, 'payment/misc.html', {'upcoming': upcoming, 'invoices': invoices, 'customer': customer})
 
 
 @csrf_exempt
-def chargeupdate(request):
+def add_card(request):
     customer = Api_key.objects.get(user=request.user)
     if request.method == 'POST':
-        
         data = json.loads(request.body)
         paymentMethod = data['payment_method']
-        stripe.PaymentMethod.detach(customer.paymentMenthod,
-)
-        Api_key.objects.update(user=request.user,paymentMenthod=paymentMethod)
-        
+        card = data['card']
+        details = data['details']
+        print(details['name'], details['phone'])
+        Payment_key.objects.create(user=request.user, name=details['name'], phone=details['phone'], email=details['email'],
+                                   last4=card['last4'], exp_month=card['exp_month'], exp_year=card['exp_year'], payment_id=paymentMethod,)
+        # attach payment to the customer
         stripe.PaymentMethod.attach(
-        paymentMethod,
-        customer="cus_HHRGotKA8ZVdQ7",
+            paymentMethod,
+            customer=customer.customer_Id,
         )
-        subscription = stripe.Subscription.modify(
-        customer.subscription_ID,
-       
-        default_payment_method=paymentMethod
-        # billing_cycle_anchor=datetime.now(),
+    return render(request, 'payment/paymentupdate.html', {})
 
+
+def edit_card(request, id):
+
+    method = stripe.PaymentMethod.modify(
+        id,
+    )
+    values = method.billing_details
+    card = (method.card)
+
+    if request.method == 'POST':
+        method = stripe.PaymentMethod.modify(
+            id,
+            billing_details={'name': request.POST['username'], 'email': request.POST['useremail'],
+                             'phone': request.POST['phone'], 'address': {'city': request.POST['city'], 'state': request.POST['state'], 'country': request.POST['country']}},
+            card={'exp_month': request.POST['exp_month'],
+                  'exp_year': request.POST['exp_year']}
         )
-        
-        # creating user object to be saved in database
-        return redirect('home')
-    return render(request, 'app/paymentupdate.html')
+        Payment_key.objects.filter(payment_id=id).update(name=request.POST['username'], phone=request.POST['phone'],
+                                                         email=request.POST['useremail'], exp_month=request.POST['exp_month'], exp_year=request.POST['exp_year'],)
+    return render(request, 'payment/retrieve.html', {'values': values, 'card': card , "p" : Payment_key})
+
+
+def list_card(request):
+    card = Payment_key.objects.filter(user=request.user)
+
+    return render(request, 'payment/list.html', {'card': card})
+
+
+def make_default(request, id):
+    try:
+        customer = Api_key.objects.filter(user=request.user)
+        if len(customer) != 0:
+            customer = customer[0]        
+            card = Payment_key.objects.filter(user=request.user).update(default=False)
+            stripe.Customer.modify(
+                customer.customer_Id,
+                invoice_settings={'default_payment_method': id}
+                # billing_cycle_anchor=datetime.now(),
+
+            )
+            Payment_key.objects.filter(payment_id=id).update(default=True)
+            card = Payment_key.objects.get(payment_id=id)
+            print(card)
+        else:
+            customer  = None
+            card =None
+    except Exception as e:
+        messages.success(request, "Can't make is as default right now." )
+        return redirect("list_card")
+        customer = None
+        card  = None
+
+    return render(request, 'payment/default.html', {'i': card})
+
+
+def delete_payment(request, id):
+    stripe.PaymentMethod.detach(id)
+    try:
+        if len(Payment_key.objects.filter(user  = request.user).count()) == 1:
+            pass
+        else:            
+            Payment_key.objects.get(payment_id=id).delete()
+    except:
+        pass
+    return render(request, 'payment/delete.html')
 
 
 
+# @csrf_exempt
+# def chargeupdate(request):
+#     customer = Api_key.objects.get(user=request.user)
+#     if request.method == 'POST':
+
+#         data = json.loads(request.body)
+#         paymentMethod = data['payment_method']
+#         stripe.PaymentMethod.detach(customer.paymentMenthod,
+# )
+#         Api_key.objects.update(user=request.user,paymentMenthod=paymentMethod)
+
+#         stripe.PaymentMethod.attach(
+#         paymentMethod,
+#         customer="cus_HHRGotKA8ZVdQ7",
+#         )
+#         subscription = stripe.Subscription.modify(
+#         customer.subscription_ID,
+
+#         default_payment_method=paymentMethod
+#         # billing_cycle_anchor=datetime.now(),
+
+#         )
+
+#         # creating user object to be saved in database
+#         return redirect('home')
+#     return render(request, 'app/paymentupdate.html')
 
 
 def convert(time):
-    return  datetime.utcfromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.utcfromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S')

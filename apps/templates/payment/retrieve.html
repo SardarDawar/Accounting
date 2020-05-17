@@ -1,0 +1,98 @@
+<!-- 4000008260003178 -->
+
+{% extends 'Base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+
+<div class="row mr-0">
+  <div class="col-md-1">
+    {% include 'music/side_bar.html' %}
+  </div>
+
+
+  <div class="col-lg-10">
+    <div class="mx-auto" style="width:700px;">
+      <div class="card" style="width: 40rem;">
+        <div class="card-header">
+          <h5 class="card-title font-weight-bold">
+            Payment Card Update
+
+          </h5>
+
+        </div>
+        <div class="card-body">
+
+
+
+          <form method="POST">
+            <img src="{% static 'payments.png' %}"><br><br>
+
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <label> Name: </label><input class="form-control" type="text" value="{{values.name}}" name="username">
+              </div>
+              <div class="col-md-6">
+                <label> Email: </label><input class="form-control" type="email" value="{{values.email}}"
+                  name="useremail">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label> Phone Number: </label><input type="text" class="form-control" value="{{values.phone}}"
+                  name="phone">
+
+              </div>
+              <div class="col-md-6">
+                <label>State:</label><input type="text" class="form-control" value="{{values.address.state}}"
+                  name="state">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label> city: </label><input type="text" class="form-control" value="{{values.address.city}}"
+                  name="city">
+              </div>
+              <div class="col-md-6">
+                <label>Country:</label><input type="text" class="form-control" value="{{values.address.country}}"
+                  name="country">
+              </div>
+            </div>
+            <label>Card Details</label><br>
+            <h2>****-****-****-*{{card.last4}}</h2>
+
+            <div class="row">
+              <div class="col-md-6">
+                <label>Expiry Month:</label><input type="text" class="form-control" value="{{card.exp_month}}"
+                  name="exp_month">
+              </div>
+              <div class="col-md-6">
+                <label>Expiry Year:</label><input type="text" class="form-control" value="{{card.exp_year}}"
+                  name="exp_year">
+              </div>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-success">Update</button>
+            
+            
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="{% static 'music/client.js' %}"></script>
+
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+<!-- 4000008260003178 -->

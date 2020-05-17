@@ -1,5 +1,11 @@
 {% load static %}
 <!-- Modal -->
+
+<style>
+  #paymentDiv{
+    display:none;
+  }
+</style>
 <div class="modal fade" id="exampleModalDevice" tabindex="-1" role="dialog" aria-labelledby="exampleModalDeviceLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width:900px !important;">
@@ -35,10 +41,10 @@
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show" id="home" role="tabpanel" aria-labelledby="home-tab">
             <div class="card-body mt-3">
-              <p class="card-text">Ensure that your device is campatible with by going to <a
+              <p class="card-text">Ensure that your device is campatible with by going to <a target="_blank"
                   href="https://www.verizonwireless.com/onedp/byod#/deviceType">https://www.verizonwireless.com/onedp/byod#/deviceType</a>
               </p>
-              <p class="card-text">For T-mobile - <a
+              <p class="card-text">For T-mobile - <a target="_blank"
                   href="https://www.t-mobile.com/resources/bring-your-own-phone">https://www.t-mobile.com/resources/bring-your-own-phone</a>
               </p>
               <p class="card-title">AT&T - <a class="card-link" href="https://m.att.com/shopmobile/wireless/byop/checkIMEI.html" target="_blank">https://m.att.com/shopmobile/wireless/byop/checkIMEI.html</a></p>
@@ -90,11 +96,11 @@
                   Welcome to the circle! Please follow the steps below to transfer your Verizon account over to ours.
                 </p>
                 <p class="card-text pl-2">
-                  <a
+                  <a target="_blank"
                     href="https://www.verizonwireless.com/support/transfer-your-service-video">https://www.verizonwireless.com/support/transfer-your-service-video</a>
                 </p>
                 <p class="card-text pl-2">
-                  <a
+                  <a target="_blank"
                     href="https://www.verizonwireless.com/UFDRender/flows/RelinquishingService">https://www.verizonwireless.com/UFDRender/flows/RelinquishingService</a>
                 </p>
                 <p class="card-text pl-2 mb-2">
@@ -114,13 +120,13 @@
               <p class="card-text">Ensure that your device is campatible with {{ plan.category.Name }} by going to
                 {% autoescape off %}
                 {% if plan.category.Name == "Verizon" %}
-                <a
+                <a target="_blank"
                   href="https://www.verizonwireless.com/onedp/byod#/deviceType">https://www.verizonwireless.com/onedp/byod#/deviceType</a>
                 {% elif plan.category.Name == "AT&T" %}
-                <a href=" https://m.att.com/shopmobile/wireless/byop/checkIMEI.html">
+                <a  target="_blank" href=" https://m.att.com/shopmobile/wireless/byop/checkIMEI.html">
                   https://m.att.com/shopmobile/wireless/byop/checkIMEI.html</a>
                 {% elif plan.category.Name == "T-Mobiles" %}
-                <a href="https://www.t-mobile.com/resources/bring-your-own-phone">
+                <a  target="_blank" href="https://www.t-mobile.com/resources/bring-your-own-phone">
                   https://www.t-mobile.com/resources/bring-your-own-phone</a>
                   
                 {% endif %}
@@ -170,20 +176,19 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-10 mt-2 card p-2 font-weight-normal">
-          {% include "app/payment.html" %}
+        <div class="col-sm-7 mt-2 card p-2 font-weight-normal" id="paymentDiv" style="margin-top: 0px !important; margin-bottom: 0px !important; margin-left: 20px !important;">
+          {% include "payment/payment.html" %}
         </div>
         
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
 
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
 
 <script>
@@ -195,4 +200,5 @@
   }); 
 </script>
 
+<script src="https://js.stripe.com/v3/"></script>
 

@@ -33,17 +33,27 @@ form.addEventListener('submit', function(event) {
     card: cardElement,
     billing_details: {
       email: 'jenny.rosen@example.com',
+      name:(first_name.value).concat(last_name.value) 
+      ,
+      phone:Phone_number.value,
+      address: {
+        "city": City.value,
+        "country": Country.value,
+        "postal_code": null,
+        "state": State.value
+      },
      
     },
-  }).then(stripePaymentMethodHandler);
+
+  }).then(change);
 });
 
-function stripePaymentMethodHandler(result, email) {
+function change(result, email) {
   if (result.error) {
     alert(result)
   } else {
     // Otherwise send paymentMethod.id to your server
-    fetch('/update', {
+    fetch('/add_card', {
       method: 'post',
       credentials: "same-origin",
       headers: {'Content-Type': 'application/json'},
@@ -51,9 +61,13 @@ function stripePaymentMethodHandler(result, email) {
       body: JSON.stringify({
        
         payment_method: result.paymentMethod.id,
+        card: result.paymentMethod.card,
+        details: result.paymentMethod.billing_details,
       }),
    
     }).then(function(result) {
+      window.location.replace('/list_card')
+
       return result.json();
     }).then(function(customer) {
       

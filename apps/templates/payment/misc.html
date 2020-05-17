@@ -1,0 +1,74 @@
+{% load convert %}
+{% load humanize  %}
+    <div class="mx-auto" style="width:530px !important;">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title font-weight-bold">
+                    History
+                </h5>
+            </div>
+            <div class="card-body">
+                
+                <table class="table">
+                    <thead>
+                       
+                        <tr>
+                            <th>Created Date</th>
+                            <th>Invoice Number</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                        </tr>
+
+                       
+                    </thead>
+                    <tbody>
+                        {%  for i in invoices%}
+                        <tr>
+                            <td>{{i.created | convert}}</td>
+                            <td>{{i.number}}</td>
+                            <td>${{i.amount_paid|intcomma}}</td>
+                            <td>{{ i.collection_method }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+
+            </div>
+
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title font-weight-bold">
+                    Upcoming
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Created Date</th>
+                            <th>Invoice Number</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{upcoming.created | convert }}</td>
+                            <td>{{ upcoming.number }}</td>
+                            <td>${{upcoming.amount_due|intcomma}}</td>
+                            <td>{{ upcoming.collection_method }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+

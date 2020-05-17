@@ -19,7 +19,10 @@
           </button>
         </div>
         <div class="modal-body">
-         
+          <p class="card-text text-danger">
+            Are you sure you want to Cancel? You’ll be charged the prorated amount for your mobile bill.
+
+          </p>
             <div class="form-group">
               <label for="exampleFormControlTextarea1">Feedback</label>
               <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="feedback" required="" maxlength="500"  {% if edit is False %}disabled{% endif %}>{{ sub.feedback }}</textarea>

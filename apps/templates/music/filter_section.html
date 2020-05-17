@@ -1,0 +1,25 @@
+{% load static humanize FindSubUser findNextYear findNextMonth %}
+
+<div class="dropdown ml-5 mb-3">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+      aria-haspopup="true" aria-expanded="false">
+      Filter Results
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="width:200px !important;">
+      <form class="px-1 py-1" action="." method="GET">
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Based on Category</label>
+          <select class="form-control" id="exampleFormControlSelect1" name="category" onchange="this.form.submit();">
+            <option vaule="None">None</option>
+            <option vaule="All">All</option>
+            {% for category in filters %}
+  
+            <option vaule="{{ category.Name }}">{{ category.Name }}</option>
+            {% endfor %}
+  
+          </select>
+        </div>
+  
+      </form>
+    </div>
+  </div>
