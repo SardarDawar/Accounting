@@ -58,9 +58,8 @@ def home(request):
                 new.number_of_open_slots = new.total_slots
                 new.save()
                 form.save()
-                current_site = get_current_site(request)
-                build_link = str(request.scheme) + "://" + str(current_site.domain) + \
-                    str(reverse("plandetail", args=[new.id]))
+                # current_site = get_current_site(request)
+                build_link = str(settings.SITE_REDIRECT_ORIGINAL) + str(reverse("plandetail", args=[new.id]))
                 subject = 'New Plan [Alert]'
                 content = f"Details of the new plan as follows:\n"
                 content += f"Plan Creator Name : {new.user.username}\n"
@@ -116,17 +115,24 @@ def login_user(request):
         form = loginForm(request.POST)
         valuenext = request.POST.get('next')
         if form.is_valid():
-            user = authenticate(
-                request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user is not None:
-                login(request, user)
-                if len(valuenext) != 0 and valuenext is not None:
-                    return redirect(valuenext)
+            try:
+                u = User.objects.get(username__iexact = form.cleaned_data['username'])
+                user = authenticate(
+                    request, username=u.username, password=form.cleaned_data['password'])
+                if user is not None:
+                    login(request, user)
+                    if len(valuenext) != 0 and valuenext is not None:
+                        return redirect(valuenext)
+                    else:
+                        return redirect('home')
                 else:
-                    return redirect('home')
-            else:
+                    messages.warning(
+                        request, 'Usename or password may have been entered incorrectly.')
+                    return redirect('login')
+            except Exception as e:
+                print(e)
                 messages.warning(
-                    request, 'Usename or password may have been entered incorrectly.')
+                        request, 'Usename or password may have been entered incorrectly.')
                 return redirect('login')
     return render(request, 'music/login.html', {'form': form})
 
@@ -177,37 +183,45 @@ def register_user(request):
     else:
         form = registerForm(request.POST)
         form_2 = profileInformForm(request.POST)
-        if form.is_valid() & form_2.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.username = form.cleaned_data['username']
-            user.set_password(form.cleaned_data['password2'])
-            user.email = form.cleaned_data['email']
-            user.save()
-            profile = profileModel.objects.create(user=user)
-            profile.contactNumber = form_2.cleaned_data['contactNumber']
-            profile.save()
-            current_site = get_current_site(request)
-            valuenext = request.POST.get('next')
-            if len(valuenext) == 0 or valuenext is None:
-                valuenext = None
-            content = render_to_string('music/acc_active_email.html', {
-                'user': user, 'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-                'valuenext': valuenext
-            })
-            subject = 'Activate your account.'
-            to_email = (form.cleaned_data.get('email'))
-            ################################
-            # to_email = To(form.cleaned_data.get('email').lower())
-            subject = 'Activate your account.'
-            # mail = Mail(from_email, to_email, subject, content)
-            # sg.client.mail.send.post(request_body=mail.get())
-            email = EmailMessage(subject, content, to=[to_email])
-            email.send()
-            return render(request, 'music/acc_active_email_confirm.html', {'email': to_email})
+        try:
+            if form.is_valid() & form_2.is_valid():
+                user = form.save(commit=False)
+                user.is_active = False
+                user.username = form.cleaned_data['email'].split("@")[0]
+                user.set_password(form.cleaned_data['password2'])
+                user.email = form.cleaned_data['email']
+                user.save()
+                profile = profileModel.objects.create(user=user)
+                profile.contactNumber = form_2.cleaned_data['contactNumber']
+                profile.save()
+                print(profile)
+                current_site = get_current_site(request)
+                valuenext = request.POST.get('next')
+                if len(valuenext) == 0 or valuenext is None:
+                    valuenext = None
+                content = render_to_string('music/acc_active_email.html', {
+                    'user': user,
+                    'build_link' : str(settings.SITE_REDIRECT_ORIGINAL),
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                    'valuenext': valuenext
+                })
+                subject = 'Activate your account.'
+                to_email = user.email
+                ################################
+                # to_email = To(form.cleaned_data.get('email').lower())
+                subject = 'Activate your account.'
+                # mail = Mail(from_email, to_email, subject, content)
+                # sg.client.mail.send.post(request_body=mail.get())
+                email = EmailMessage(subject, content, to=[to_email])
+                email.send()
+                return render(request, 'music/acc_active_email_confirm.html', {'email': to_email})
+        except Exception as e:
+            # print(e)
+            # print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
+            return redirect("register")
     return render(request, 'music/register.html', {'form': form, 'form_2': form_2})
+
 
 
 # ****************************************************************
@@ -239,7 +253,9 @@ def activate(request, uidb64, token):
         except:
             return redirect('home')
     else:
-        return HttpResponse('Activation link is invalid!')
+        messages.success(request, "Invalid Activation Link")
+        return redirect("login")
+        # return HttpResponse('Activation link is invalid!')
 
 # ****************************************************************
 # Edit Profile View
@@ -253,6 +269,7 @@ def edit_profile(request):
     try:
         profile = profileModel.objects.get(user=request.user)
     except profileModel.DoesNotExist:
+        # print("adkasjdnasdasda")
         profile = profileModel.objects.create(user=request.user)
         profile.save()
     if request.method != 'POST':
@@ -279,11 +296,20 @@ def edit_profile(request):
             form.save()
             form_2.save()
             messages.success(request, "Profile has been updated successfully.")
-            return HttpResponseRedirect(reverse('edit_profile'))
+            return redirect(reverse('edit_profile'))
+        else:
+            print(str(form.errors), str(form_2.errors))
     # print(form_2.errors)
-    return render(request, 'music/edit_profile.html', {'form': form, 'profile': profile, 'form_2': form_2, 'edit_profile': True, 'upcoming': upcoming, 
+    context = {
+        'form': form, 
+        'profile': profile, 
+        'form_2': form_2, 
+        'edit_profile': True, 
+        'upcoming': upcoming, 
         'invoices': invoices, 
-        'customer': customer})
+        'customer': customer
+    }
+    return render(request, 'music/edit_profile.html', context)
 
 # ****************************************************************
 # Change Password View
@@ -379,8 +405,7 @@ def planFormView(request):
             new.save()
             form.save()
             current_site = get_current_site(request)
-            build_link = str(request.scheme) + "://" + str(current_site.domain) + \
-                str(reverse("admin:apps_plan_change", args=[new.id]))
+            build_link = str(settings.SITE_REDIRECT_ORIGINAL)  + str(reverse("admin:apps_plan_change", args=[new.id]))
             subject = 'New Plan [Alert]'
             content = f"Details of the new plan as follows:\n"
             content += f"Plan Creator Name : {new.user.username}\n"
@@ -417,10 +442,8 @@ def planEditFormView(request, id):
                     new.save()
                     form.save()
                     current_site = get_current_site(request)
-                    build_link = str(request.scheme) + "://" + str(current_site.domain) + \
-                        str(reverse("admin:apps_plan_change", args=[new.id]))
-                    build_link_2 = str(request.scheme) + "://" + str(current_site.domain) + str(
-                        reverse("admin:apps_plan_history", args=[new.id]))
+                    build_link = str(settings.SITE_REDIRECT_ORIGINAL) + str(reverse("admin:apps_plan_change", args=[new.id]))
+                    build_link_2 = str(settings.SITE_REDIRECT_ORIGINAL) +  str(reverse("admin:apps_plan_history", args=[new.id]))
                     subject = 'Edit Existing Plan [Alert]'
                     content = f"Details of the Edit plan as follows:\n"
                     content += f"Plan Editor Name : {new.user.username}\n"
@@ -439,13 +462,15 @@ def planEditFormView(request, id):
             context = {
                 'form': form,
                 'object': obj,
-                'list_plans_section': True
+                'list_plans_section': True,
+                'categories': category.objects.all()
             }
             return render(request, 'app/form_edit_plan.html', context)
         else:
             messages.success(request, "Does Not have access.")
             return render(request, 'app/error.html')
-    except:
+    except Exception as e:
+        print(e)
         messages.success(request, "Requested Page Does Not Exists")
         return render(request, 'app/error.html')
 
@@ -453,7 +478,7 @@ def planEditFormView(request, id):
 @login_required
 def planList(request):
     plans = plan.objects.filter(
-        user=request.user).order_by('number_of_open_slots')
+        user=request.user).order_by('total_slots')
 
     context = {
         'plans': plans,
@@ -497,7 +522,7 @@ def CalculatorView(request):
 
 
 # ****************************************************************
-# Join A Subscription (Join Plan)
+# Join A Subscription (Join Plan) -> Subscribe to a Plan
 # ****************************************************************
 def Join_A_Plan(request, category_id, plan_id):
     try:
@@ -517,9 +542,6 @@ def Join_A_Plan(request, category_id, plan_id):
                         obj.TotalAmount = int(
                             p.currently_monthly_payment_per_line) * int(request.POST['number_of_slots'])
                         obj.save()
-                        # Reduced the plan available slots for subscription
-                        p.number_of_open_slots = int(
-                            p.number_of_open_slots) - int(request.POST['number_of_slots'])
                         p.save()
                         # ****************************************************************
                         # Email Settings
@@ -527,8 +549,7 @@ def Join_A_Plan(request, category_id, plan_id):
                         # sg.client.mail.send.post(request_body=mail.get())
                         # ****************************************************************
                         current_site = get_current_site(request)
-                        link_build = str(request.scheme) + "://" + str(
-                            current_site.domain) + str(reverse("Details", args=[plan_id, obj.id]))
+                        link_build = str(settings.SITE_REDIRECT_ORIGINAL) + str(reverse("Details", args=[plan_id, obj.id]))
                         to_email = (p.user.email)
                         subject = 'Subscription Alert'
                         content = f"A Subscription has been added to your plan.Kindly visit the following link to see details.\n\t{link_build}"
@@ -551,12 +572,10 @@ def Join_A_Plan(request, category_id, plan_id):
                 return redirect("login")
         template_name = "app/join.html"
         p = plan.objects.get(id=plan_id)
-        slots = p.number_of_open_slots
-        slots = [i for i in range(1, (slots) + 1)]
         context = {
-            'slots': slots,
+            'slots': [i for i in range(1, p.total_slots + 1)],
             'plan': p,
-            'total': len(slots)
+            'total': len([i for i in range(1, p.total_slots + 1)])
         }
         return render(request, template_name, context)
     except (plan.DoesNotExist, category.DoesNotExist, subscription.DoesNotExist):
@@ -577,8 +596,7 @@ def Cancel_A_Plan(request,  plan_id, sub_id):
         s = subscription.objects.get(
             id=sub_id, plan=p, user=User.objects.get(username=request.user.username))
         current_site = get_current_site(request)
-        link_build = str(request.scheme) + "://" + str(current_site.domain) + \
-            str(reverse("Details", args=[plan_id, s.id]))
+        link_build = str(settings.SITE_REDIRECT_ORIGINAL) + str(reverse("Details", args=[plan_id, s.id]))
         try:
             subject = 'Subscription Alert [Request to Cancel]'
             content = f"""A request has been to cancel a subscription.\n
@@ -589,14 +607,11 @@ def Cancel_A_Plan(request,  plan_id, sub_id):
                     Subscription Number of Slots: {s.number_of_slots}\n
                     Subscription Total Amount: {s.TotalAmount}\n 
                     Subscription Timestamp: {s.created_at}\n
-                    Reason/Feedback:\n
-                    {request.POST['feedback']}\n
                     Link to see the details of the subscription\n
                     {link_build}"""
             to_email = (p.user.email)
             email = EmailMessage(subject, content, to=[
                                  to_email, "support@circledin.io"])
-            # p.number_of_open_slots  = int(p.number_of_open_slots) + int(s.number_of_slots)
             p.save()
             s.leaveRequest = True
             s.save()
@@ -665,7 +680,7 @@ def Plans(request):
     obj = plan.objects.filter(
         user=User.objects.get(username=request.user.username))
 
-    categories = category.objects.all()
+    categories = category.objects.all().order_by("-Name")
     A = []
     C = {}
 
@@ -696,8 +711,7 @@ def ApproveSubscription(request, user_id, plan_id, sub_id):
         # ****************************************************************
         subject = 'Subscription Alert'
         current_site = get_current_site(request)
-        link_build = str(request.scheme) + "://" + str(current_site.domain) + \
-            str(reverse("Details", args=[plan_id, s.id]))
+        link_build = str(settings.SITE_REDIRECT_ORIGINAL) +  str(reverse("Details", args=[plan_id, s.id]))
         to_email = (s.user.email)
         content = f"A Subscription has been approved.Kindly visit the following link to see details.\n\t{link_build}"
         email = EmailMessage(subject, content, to=[
@@ -728,8 +742,7 @@ def DisapproveSubscription(request, user_id, plan_id, sub_id):
         # ****************************************************************
         subject = 'Subscription Alert'
         current_site = get_current_site(request)
-        link_build = str(request.scheme) + "://" + str(current_site.domain) + \
-            str(reverse("Details", args=[plan_id, s.id]))
+        link_build = str(settings.SITE_REDIRECT_ORIGINAL) +  str(reverse("Details", args=[plan_id, s.id]))
         to_email = (s.user.email)
         content = f"A Subscription has been disapproved.Kindly visit the following link to see details.\n\t{link_build}"
         email = EmailMessage(subject, content, to=[
@@ -756,24 +769,17 @@ def EditSubscription(request, plan_id, sub_id):
             plan=p
         )
         if request.method == "POST":
-            p.number_of_open_slots = int(
-                p.number_of_open_slots) + int(s.number_of_slots)
-            p.save()
             s.number_of_slots = request.POST['number_of_slots']
             s.TotalAmount = int(
                 p.currently_monthly_payment_per_line) * int(request.POST['number_of_slots'])
             s.save()
-            # Reduced the plan available slots for subscription
-            p.number_of_open_slots = int(
-                p.number_of_open_slots) - int(s.number_of_slots)
             p.save()
             # ****************************************************************
             # Email Settings
             # ****************************************************************
             subject = 'Subscription Alert'
             current_site = get_current_site(request)
-            link_build = str(request.scheme) + "://" + str(current_site.domain) + \
-                str(reverse("Details", args=[plan_id, s.id]))
+            link_build = str(settings.SITE_REDIRECT_ORIGINAL) + str(reverse("Details", args=[plan_id, s.id]))
             to_email = (p.user.email)
             content = f"A Subscription has been modified.Kindly visit the following link to see details.\n\t{link_build}"
             email = EmailMessage(subject, content, to=[
@@ -785,14 +791,11 @@ def EditSubscription(request, plan_id, sub_id):
         else:
             # print(s)
             template_name = "app/edit_subscription.html"
-            slots = int(s.number_of_slots) + int(p.number_of_open_slots)
-            total = slots
-            slots = [i for i in range(1, (slots) + 1)]
             context = {
-                'slots': slots,
+                'slots': [i for i in range(1, p.total_slots + 1)],
                 'plan': p,
                 'subs': s,
-                'total': total
+                'total': len([i for i in range(1, p.total_slots + 1)])
             }
             return render(request, template_name, context)
 
@@ -891,8 +894,7 @@ def DeletePlan(request, plan_id):
                 # ****************************************************************
                 subject = 'Plan Alert [Cancel Request]'
                 current_site = get_current_site(request)
-                build_link = str(request.scheme) + "://" + str(current_site.domain) + \
-                    str(reverse("admin:apps_plan_change", args=[p.id]))
+                build_link = str(settings.SITE_REDIRECT_ORIGINAL) +  str(reverse("admin:apps_plan_change", args=[p.id]))
                 content += "\nDetails Following Link\n"
                 content += f"{build_link}"
                 email = EmailMessage(subject, content, to=[
@@ -999,9 +1001,9 @@ def leaveFamily(request,  cat_id, plan_id):
         # ****************************************************************
         subject = 'Plan Alert [Request to Cancel]'
         current_site = get_current_site(request)
-        build_link = str(request.scheme) + "://" + str(current_site.domain) + \
-            str(reverse("admin:apps_plan_change", args=[p.id]))
-        content = "\nDetails Following Link\n"
+        build_link = str(settings.SITE_REDIRECT_ORIGINAL) +  str(reverse("admin:apps_plan_change", args=[p.id]))
+        content =  f"A request to cancel a plan has been made from {request.user.email}"
+        content += "\nDetails Following Link\n"
         content += f"{build_link}"
         email = EmailMessage(subject, content, to=["support@circledin.io"])
         email.send()
@@ -1060,7 +1062,8 @@ def charge(request):
                 # creating user object to be saved in database
                 Api_key.objects.create(user=request.user, paymentMenthod=paymentMethod, customer_Id=customer.id,
                                        subscription_ID=subscription.id)
-                
+                messages.success(request, "new method has been added.")
+                return redirect("edit_profile")
         except Exception as e:
             # print("***********************************")
             # print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)

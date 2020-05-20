@@ -1,6 +1,7 @@
 function PlanCreationFunction(x, y) {
 
 
+  // console.log(x, y);
   // console.log(j);
   // console.log($("#id_category option:contains(j)"));
   // $("#id_category option:contains(j)");

@@ -72,7 +72,7 @@
                         {% endfor %}
                         {% endif %}
                         <div class="form-group">
-                            <label for="exampleUserName1">User Name</label>
+                            <label for="exampleUserName1">Username</label>
                             <input type="text" name="username" value="{{ request.user.username }}" maxlength="150"
                                 required id="id_username" class="form-control">
                                 <div class="invalid-feedback">
@@ -81,6 +81,18 @@
                             <small id="usernameHelpInline" class="text-muted">
                                 Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
                             </small>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleUserName1">Email</label>
+                            <p type="text" class="card-text" >
+                                {{ request.user.email }}
+                                <br>
+                                <small id="usernameHelpInline" class="text-muted">
+                                    You can't edit email address.
+                                </small>
+                            </p>
+
+                            
                         </div>
 
                         <div class="form-group">

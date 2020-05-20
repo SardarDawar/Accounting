@@ -16,9 +16,12 @@
   }
 </style>
 
+<script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
+
 {% if obj %}
   {% for plan in obj %}
     {% include "app/delete_confirmation_for_plan.html" with plan=plan %}
+    {% include "app/user_plans_page_edit_plan_form_modal.html" with object=plan %}
   {% endfor %}
 {% endif %}
 
@@ -59,21 +62,25 @@
                 <div class="card bg-light text-dark pt-0" style="margin-top: 0px !important; margin-bottom: 0px !important;">
                     <h6 class="card-title pt-2 pl-5 pb-3 mb-0 alert-info font-weight-bold" style="font-size: 20px;">{{ key }}</h6>
                     
-                    
+                   
+                        
                     {% for j in values %}
+                    
                     {% if j %}
                     <div class="list-group">
+                     
+
                         <div class="list-group-item list-group-item-action bg-white">
                           <span class="font-weight-bold">
                             {{ j.plan_name }} Family
                           </span>
                           
-                           
+                        
                             <button class="btn btn-danger text-white font-weight-bold float-right" type="button">
                               {% if j.leaveRequest == True %}
                                 Need Admin Approval
                               {% else %}
-                              <a href="#" class="text-white font-weight-bold"  data-toggle="modal" data-target="#exampleModalPlanDelete_{{ j.id }}_{{ j.plan_name }}">Leave Family</a>
+                              <a href="#" class="text-white font-weight-bold"  data-toggle="modal" data-target="#exampleModalPlanDelete_{{ j.id }}_{{ j.plan_name|slugify }}">Delete Family</a>
                               {% endif %}
                             </button>
                             
@@ -89,18 +96,19 @@
                               </a>
                             </button>
                             <button class="btn btn-success text-white font-weight-bold float-right mr-2" type="button">
-                              <a href="{% url 'planeditform' j.id %}" class="text-white font-weight-bold">Edit</a>
+                              <a href="{% url 'planeditform' j.id %}" class="text-white font-weight-bold" data-toggle="modal" data-target="#exampleModalEditPlan_{{ j.id }}_{{ j.plan_name|slugify }}">Edit</a>
                             </button>
-
+                            
                             
                         </div>
-                       
+                        
+
                             {% for k  in j.get_subscription_objects %}
                           <table class="table">
                            
                             <tbody>
                                 <tr>
-                                    <td class="col-sm-3"> <a href="{% url 'Details' j.id k.id %}" title="See Subscription Details"> {{ k.user.username }}</a></td>
+                                    <td class="col-sm-3"> <a href="{% url 'Details' j.id k.id %}" title="See Subscription Details"> {{ k.user.email }}</a></td>
                                     
 
 
@@ -121,11 +129,11 @@
                                     {% if k.leaveRequest is False %}
                                       {% if k.status == "Active" %}
                                         <td class="col-sm-3">
-                                          <button  type="button" class="btn btn-success float-right mr-2" >Approved</button>
+                                          <button  type="button" class="btn btn-success float-right mr-2" >Active</button>
                                         </td>
                                       {% elif k.status == "Inactive" %}
                                         <td class="col-sm-3">
-                                          <button  type="button" class="btn btn-success float-right mr-2" >Disapprove</button>
+                                          <button  type="button" class="btn btn-success float-right mr-2" >Inactive</button>
                                         </td>
                                       {% endif %}
                                     {% else %}
@@ -164,6 +172,8 @@
   </div>
 
 </div>
+
+
 
 
     {% endblock %}

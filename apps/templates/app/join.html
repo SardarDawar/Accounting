@@ -1,5 +1,5 @@
 {% extends 'Base.html' %}
-{% load humanize FindSubUser findNextMonth findNextYear findFindSubID findSubStatus FindSubObject %}
+{% load humanize FindSubUser findNextMonth findNextYear findFindSubID findSubStatus FindSubObject findPaymentCurrentDay %}
 {% block title %} Join a Plan {% endblock %}
 
 
@@ -57,14 +57,14 @@
                       <button type="button" class="btn btn-outline-secondary wr-200" style="width:250px !important;">Current Family Size : {{ plan.currentFamilySize }}</button>
                   </div>
                   <div class="col">
-                      <button type="button" class="btn btn-outline-secondary wr-200" style="width:250px !important;">Open Slots: {{ plan.number_of_open_slots }} </button>
+                      <button type="button" class="btn btn-outline-secondary wr-200" style="width:250px !important;">Open Slots: {{ plan.total_slots }} </button>
                   </div>
               </div>
               
               
               <div class="row">
                   <div class="col">
-                      <button type="button" class="btn btn-outline-secondary wr-200" style="width:250px !important;">Payment Date: {{ request.user|findNextMonth }} {{ plan.monthly_payment_date }}, {{ request.user|findNextYear }} </button>
+                      <button type="button" class="btn btn-outline-secondary wr-200" style="width:250px !important;">Payment Date: {{ request.user|findNextMonth }} {{ plan.monthly_payment_date|findPaymentCurrentDay }}, {{ request.user|findNextYear }} </button>
                   </div>
                   <div class="col">
                       <a type="button" class="btn btn-outline-secondary wr-200" href="{% url  'contact' %}" style="width:250px !important;" data-toggle="modal" data-target="#exampleModalContact">Contact Support</a>

@@ -62,7 +62,7 @@ class category(models.Model):
      # Get all plans for a specific category (Approved)
      # ****************************************************************
     def get_plans(self):
-        return self.plan_set.all().filter(status="Active").order_by('number_of_open_slots')
+        return self.plan_set.all().filter(status="Active").order_by('total_slots')
 
 
 # ****************************************************************
@@ -139,13 +139,7 @@ class plan(models.Model):
     # Retrive whether the current plan have available slots to subscribe
     # ****************************************************************
     def get_available_status(self):
-        try:
-            if int(self.number_of_open_slots) > 0:
-                return True
-            else:
-                return False
-        except Exception as e:
-            return self.number_of_open_slots
+        return True
 
     # ****************************************************************
     # Retrive the Subscription model for current login user and plan

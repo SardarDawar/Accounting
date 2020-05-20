@@ -83,6 +83,12 @@ urlpatterns = [
     path('cancel-a-plan/<int:plan_id>', views.DeletePlan, name="DeletePlan"),
     
     # ****************************************************************
+    # Cancel plan Request
+    # ****************************************************************
+    path("cancel-request/<int:cat_id>/<int:plan_id>", views.leaveFamily, name="leaveFamily" ),
+    
+    
+    # ****************************************************************
     # Subscription Cancel Request
     # ****************************************************************
     path('cancel-subscription/<int:plan_id>/<int:sub_id>/', views.Cancel_A_Plan, name="cancel"),
@@ -160,8 +166,5 @@ urlpatterns = [
     # ****************************************************************
     path("privacy-policy", views.PrivacyPolicy, name="PrivacyPolicy"),
     
-    # ****************************************************************
-    # Cancel plan Request
-    # ****************************************************************
-    path("cancel-request/<int:cat_id>/<int:plan_id>", views.leaveFamily, name="leaveFamily" ),
+   
 ]

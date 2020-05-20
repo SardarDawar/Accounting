@@ -19,151 +19,165 @@
     </div>
     <div class="col">
         <div class="mx-auto" style="width: 1000px;">
-        
-        
-    <form method="POST">
-        {% csrf_token %}
-
-        <div class="card mb-5 mt-5" style=" width:45rem;">
 
 
-            <div class="shadow p-3 bg-white rounded">
+            <form method="POST">
+                {% csrf_token %}
 
-                <div class="card-header text-center bg-transparent border-0">
-                    <h3>
-                        Plan
-                    </h3>
+                <div class="card mb-5 mt-5" style=" width:45rem;">
 
-                </div>
-                <div class="card-body">
 
-                    {% if form.errors %}
-                    {% for field in form %}
-                    {% for error in field.errors %}
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <h5 class="alert-heading">{{ field.label }}</h5>
-                        <hr>
-                        <p class="mb-0">{{ error|escape }}</p>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    {% endfor %}
-                    {% endfor %}
-                    {% endif %}
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <label>Category</label>
-              
-                                {% if categories %}
-                                <select name="category" required="" id="id_category" class="form-control" onchange="updateLine();">
-                                  <option value="False" hidden disabled>Select</option>
-                                  {% for category in categories %}
-                                  <option value="{{ category.id }}" onclick="PlanCreationFunction('{{ category.slug }}', '{{ category.id }}');">{{ category.slug|upper   }}</option>
-                                  {% endfor %}
-                                  
-                                </select>
-              
-                              </div>
-                              
-                              <div class="form-group" id="selectContains">
-                                <label>Plan Name</label>
-              
-                                <select class="form-control" name="plan_name" id="id_plan_name_default" style="display: block;">
-                                    <option hidden>Select Category First</option>
-                                </select>
-                              {% for category in categories %}
-                              
-                                
-              
-                                <select class="form-control" name="plan_name" id="id_plan_name_{{ category.slug }}" data-target="Verizon"
-                                  style="display: none;">
-                                  
-                                  {% for j in category.categoryplanname_set.all %}
-                                    <option value="{{ j.name }}">{{ j.name }}</option>
-                                  {% endfor %}
-                                </select>
-              
-                              
-                              
-                              {% endfor %}
-                              {% endif %}
-                              
-                            </div>
+                    <div class="shadow p-3 bg-white rounded">
 
-                            
-                            <div class="form-group">
-                                <label>Family Name</label>
-                                <input type="text" name="family_name" maxlength="150" class="form-control" required="" {% if form.family_name.value %}value="{{ form.family_name.value }}"{% endif %}>
-                            </div>
+                        <div class="card-header text-center bg-transparent border-0">
+                            <h3>
+                                Plan
+                            </h3>
+
                         </div>
-                        <div class="col-md-2"></div>
-                        <div class="col-md-5">
+                        <div class="card-body">
 
-                            <div class="form-group">
-                                <label>Total Available Slots</label>
-                                {{ form.total_slots }}
-                                    
+                            {% if form.errors %}
+                            {% for field in form %}
+                            {% for error in field.errors %}
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                <h5 class="alert-heading">{{ field.label }}</h5>
+                                <hr>
+                                <p class="mb-0">{{ error|escape }}</p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                            <div class="form-group">
-                                <label>Next Recurring Bill Date</label>
-                                <div class="input-group date" data-provide="datepicker" data-date-format="dd">
-                                <input type="text" name="monthly_payment_date" maxlength="150" class="form-control" {% if form.monthly_payment_date.value %}value="{{ form.monthly_payment_date.value }}"{% endif %}
-                                    required="">
-                                    <div class="input-group-addon">
-                                        <span class="glyphicon glyphicon-th"></span>
+                            {% endfor %}
+                            {% endfor %}
+                            {% endif %}
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>Category</label>
+
+                                        {% if categories %}
+                                        <select name="category" required="" id="id_category" class="form-control"
+                                            onchange="updateLine();">
+                                            <option value="False" disabled hidden selected>Select</option>
+                                            {% for category in categories %}
+                                            <option value="{{ category.id }}"
+                                                onclick="PlanCreationFunction('{{ category.slug }}', '{{ category.id }}');">
+                                                {{ category.slug|upper   }}</option>
+                                            {% endfor %}
+
+                                        </select>
+
                                     </div>
+
+                                    <div class="form-group" id="selectContains">
+                                        <label>Plan Name</label>
+
+                                        <select class="form-control" name="plan_name" id="id_plan_name_default"
+                                            style="display: block;">
+                                            <option hidden>Select Category First</option>
+                                        </select>
+                                        {% for category in categories %}
+
+
+
+                                        <select class="form-control" name="plan_name"
+                                            id="id_plan_name_{{ category.slug }}" data-target="Verizon"
+                                            style="display: none;">
+
+                                            {% for j in category.categoryplanname_set.all %}
+                                            <option value="{{ j.name }}">{{ j.name }}</option>
+                                            {% endfor %}
+                                        </select>
+
+
+
+                                        {% endfor %}
+                                        {% endif %}
+
                                     </div>
+
+
+                                    <div class="form-group">
+                                        <label>Family Name</label>
+                                        <input type="text" name="family_name" maxlength="150" class="form-control"
+                                            required=""
+                                            {% if form.family_name.value %}value="{{ form.family_name.value }}"
+                                            {% endif %}>
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+
+                                    <div class="form-group">
+                                        <label>Total Available Slots</label>
+                                        {{ form.total_slots }}
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Next Recurring Bill Date</label>
+                                        <div class="input-group date" data-provide="datepicker" data-date-format="mm/dd/yyyy">
+                                            <input type="text" name="monthly_payment_date" maxlength="150"
+                                                class="form-control"
+                                                {% if form.monthly_payment_date.value %}value="{{ form.monthly_payment_date.value }}"
+                                                {% endif %} required="">
+                                            <div class="input-group-addon">
+                                                <span class="glyphicon glyphicon-th"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>How much are you currently paying per line?</label>
+                                        <input type="number" name="currently_monthly_payment_per_line" maxlength="150"
+                                            id="id_currently_monthly_payment_per_line"
+                                            {% if form.currently_monthly_payment_per_line.value %}
+                                            value="{{ form.currently_monthly_payment_per_line.value}}" {% endif %}
+                                            class="form-control" required="" onkeyup="updateLine()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="text-danger card-text" id="currentLinePayment"
+                                            style="display: none;"></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Current Family Size</label>
+                                        <input type="number" name="currentFamilySize" maxlength="3"
+                                            {% if form.currentFamilySize.value %}
+                                            value="{{ form.currentFamilySize.value}}" {% endif %} class="form-control"
+                                            required="">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+
+                                    <div class="form-group">
+                                        <label for="exampleFormControlTextarea1">Additional Notes (Number of characters
+                                            : <span id="CharactersCounter"></span>/500)</label>
+                                        <textarea maxlength="500" class="form-control" id="exampleFormControlTextarea1"
+                                            rows="3" onkeyup="countChar(this)"
+                                            name="notes">{% if form.linkWeb.value %}{{ form.notes.value }}{% endif %}</textarea>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>How much are you currently paying per line?</label>
-                                <input type="number" name="currently_monthly_payment_per_line" maxlength="150"
-                                  id="id_currently_monthly_payment_per_line" {% if form.currently_monthly_payment_per_line.value %}
-                                  value="{{ form.currently_monthly_payment_per_line.value}}" {% endif %} class="form-control"
-                                  required="" onkeyup="updateLine()">
-                              </div>
-                              <div class="form-group">
-                                <label class="text-danger card-text" id="currentLinePayment" style="display: none;"></label>
-                              </div>
-                            <div class="form-group">
-                                <label>Current Family Size</label>
-                                <input type="number" name="currentFamilySize" maxlength="3"
-                                  {% if form.currentFamilySize.value %}
-                                  value="{{ form.currentFamilySize.value}}" {% endif %} class="form-control"
-                                  required="">
-                              </div>
-                        </div>
-                        <div class="col-md-12">
-                            
-                            <div class="form-group">
-                                <label for="exampleFormControlTextarea1">Additional Notes (Number of characters : <span id="CharactersCounter"></span>/500)</label>
-                                <textarea maxlength="500" class="form-control" id="exampleFormControlTextarea1" rows="3" onkeyup="countChar(this)"
-                                    name="notes">{% if form.linkWeb.value %}{{ form.notes.value }}{% endif %}</textarea>
-                            </div>
+
+
+                            <input type="submit" class="btn btn-primary mt-2" value="Save">
+
+                            <a type="button" class="btn btn-danger mt-2" href="{% url 'planform' %}">Cancel</a>
+
                         </div>
                     </div>
-
-                
-                        <input type="submit" class="btn btn-primary mt-2" value="Save">
-
-                        <a type="button" class="btn btn-danger mt-2" href="{% url 'planform' %}">Cancel</a>
-
                 </div>
-            </div>
-        </div>
-    
 
 
 
 
-</form>
+
+            </form>
         </div>
 
     </div>
 
 </div>
 
- 
+
 {% endblock %}

@@ -14,7 +14,7 @@ class loginForm(forms.Form):
 
 #User Registration Form...................
 class registerForm(forms.ModelForm):
-    username = forms.CharField(label='Username', widget = forms.TextInput())
+    # username = forms.CharField(label='Username', widget = forms.TextInput())
     password = forms.CharField(label = 'Password', widget = forms.PasswordInput(),strip=False,help_text=password_validation.password_validators_help_text_html(),)
     password2 = forms.CharField(label = 'Repeat Password', widget = forms.PasswordInput(),strip=False,help_text="Both Passwords should be same.",)
     email = forms.EmailField(label = 'Email Address', widget = forms.TextInput())
@@ -27,11 +27,11 @@ class registerForm(forms.ModelForm):
 
 
     
-    def clean_username(self):
-        username = self.cleaned_data.get("username")
-        if User.objects.filter(username=username).exists():
-            raise ValidationError("Username exists")
-        return username
+    # def clean_username(self):
+    #     username = self.cleaned_data.get("username")
+    #     if User.objects.filter(username=username).exists():
+    #         raise ValidationError("Username exists")
+    #     return username
     
     #Cleaning Method for password Match..........
     def clean_password2(self):

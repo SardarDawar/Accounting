@@ -31,7 +31,7 @@
             e.target // newly activated tab
             e.relatedTarget // previous active tab
             console.log($(this).attr("id"));
-            if ($(this).attr("id") == "home-tab-2" || ($(this).attr("id") == "home-tab-2" && $(this).hasClass("active"))) {
+            if ( $(this).attr("id") == "home-tab-2" || ($(this).attr("id") == "home-tab-2" && $(this).hasClass("active"))) {
                 $("#paymentDiv").show();
             }
             else if ($(this).attr("id") == "profile-tab" || ($(this).attr("id") == "profile-tab" && $(this).hasClass("active"))) {
@@ -40,9 +40,35 @@
             else if ($(this).attr("id") == "home-tab-3" || ($(this).attr("id") == "home-tab-3" && $(this).hasClass("active"))) {
                 $("#paymentDiv").show();
             }
+            else if($(this).attr("id") == "home-tab")
+            {
+                if($("#home-tab-2").hasClass("active"))
+                {
+                    $("#paymentDiv").show();
+                }
+                else
+                {
+                    $("#paymentDiv").hide();
+                }
+            }
+            else if($(this).attr("id") == "contact-tab")
+            {
+                if($("#home-tab-3").hasClass("active"))
+                {
+                    $("#paymentDiv").show();
+                }
+                else{
+                    $("#paymentDiv").hide();
+                }
+            }
             else {
                 $("#paymentDiv").hide();
             }
         });
+
+
+        
+
     </script>
 
+    

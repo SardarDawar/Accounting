@@ -20,6 +20,11 @@ function updateSlider() {
         results = parseFloat(parseFloat(z.val()) - (parseInt(y.val()) * 35)) * 12;
     }
 
+    if ($("#options4").is(':checked')) {
+
+        results = parseFloat(parseFloat(z.val()) - (parseInt(y.val()) * 35)) * 12;
+    }
+
 
 
     if (results < 0) {
