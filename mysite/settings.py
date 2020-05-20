@@ -31,8 +31,8 @@ ALLOWED_HOSTS = ['167.172.128.142','127.0.0.1', 'www.circledin.io']
 
 #ALLOWED_HOSTS = []
 
-# SITE_REDIRECT_ORIGINAL = "https://www.circledin.io"
-SITE_REDIRECT_ORIGINAL = "http://127.0.0.1:8000"
+SITE_REDIRECT_ORIGINAL = "https://www.circledin.io"
+# SITE_REDIRECT_ORIGINAL = "http://127.0.0.1:8000"
 
 # Application definition
 
@@ -155,7 +155,7 @@ LOGOUT_URL = reverse_lazy('logout')
 
 #------------------------------------------------------------------------
 #Email Setting...
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'futuresoftcode@gmail.com'
