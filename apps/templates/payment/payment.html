@@ -1,6 +1,10 @@
 {% load static %}
+
+
+
+
 <div class="container">
-  <form id="subscription-form" method="POST" action="/charge">
+  <form id="subscription-form" method="POST">
     {% csrf_token %}
     <div class="row">  
       <div class="col-md-6">
@@ -11,16 +15,25 @@
 
 </div></div>
 <div class="row"> 
-<div class="col-md-6"> 
-  <label>Phone Number:</label> <input type="text" maxlength="12"  class="form-control" id="id_contactNumber">
-</div>
+  <div class="col-md-6"> 
+    <label>Email:</label> <input type="email"  class="form-control" id="emailid">
+  </div>
+  <div class="col-md-6"> 
+    <label>Phone Number:</label> <input type="text"  class="form-control" id="Phone_number">
+  </div>
+</div> 
+
+<div class="row"> 
+
   <div class="col-md-6">
   <label> city: </label><input type="text" class="form-control"  id="City">
-</div> </div> 
-  <div class="row"> 
-  <div class="col-md-6">
+</div>
+<div class="col-md-6">
   <label>State:</label><input type="text" class="form-control"  id="State">
 </div> 
+</div> 
+  <div class="row"> 
+ 
   <div class="col-md-6">
   <label>Country:</label><input type="text" class="form-control" id="Country">
 </div> </div> 
@@ -30,10 +43,77 @@
   <div id="card-element" >
   </div>
     <div id="card-errors" role="alert"></div><br>
+<!-- ******************** BILLING DETAILS    ******************************* -->
+    <h5>Billing Details</h5>
+    <div class="row"> 
+
+      <div class="col-md-6">
+      <label> Address line 1: </label><input type="text" class="form-control"  id="B_address_line1">
+    </div>
+    <div class="col-md-6">
+      <label>Address line 2:</label><input type="text" class="form-control"  id="B_address_line2">
+    </div> 
+    </div> 
+    <div class="row"> 
+
+      <div class="col-md-6">
+      <label> city: </label><input type="text" class="form-control"  id="B_City">
+    </div>
+    <div class="col-md-6">
+      <label>State:</label><input type="text" class="form-control"  id="B_State">
+    </div> 
+    </div> 
+      <div class="row"> 
+     
+      <div class="col-md-6">
+      <label>Postal Code:</label><input type="text" class="form-control" id="B_Postal_Code">
+    </div>
+    <div class="col-md-6">
+      <label>Country:</label><input type="text" class="form-control" id="B_Country">
+    </div>
+  </div> 
+<!-- ******************** Shipping DETAILS    ******************************* -->
+
+<h5>Shipping Details</h5>
+<div class="row"> 
+
+  <div class="col-md-6">
+  <label> Address line 1: </label><input type="text" class="form-control"  id="C_address_line1">
+</div>
+<div class="col-md-6">
+  <label>Address line 2:</label><input type="text" class="form-control"  id="C_address_line2">
+</div> 
+</div> 
+<div class="row"> 
+
+  <div class="col-md-6">
+  <label> city: </label><input type="text" class="form-control"  id="C_City">
+</div>
+<div class="col-md-6">
+  <label>State:</label><input type="text" class="form-control"  id="C_State">
+</div> 
+</div> 
+  <div class="row"> 
+ 
+  <div class="col-md-6">
+  <label>Postal Code:</label><input type="text" class="form-control" id="C_Postal_Code">
+</div>
+<div class="col-md-6">
+  <label>Country:</label><input type="text" class="form-control" id="C_Country">
+</div>
+</div> 
+
+
+<!-- ******************** *****************   ******************************* -->
+
     <button type="submit" class="btn btn-primary">Subscribe</button>
   </form>
 
 </div>
+
+
+
+
 
 <script src="{% static 'music/js/jquery-2.2.4.min.js' %}"></script>
 

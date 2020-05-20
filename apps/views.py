@@ -1019,56 +1019,74 @@ def leaveFamily(request,  cat_id, plan_id):
 
 
 # Payment ###########################3
-
 @csrf_exempt
 def charge(request):
     if request.method == 'POST':
-        # print("*********************************")
-        # print(request.method)
-        # print("*********************************")
-        try:
-            if request.body:
-                data = json.loads(request.body)
-                paymentMethod = data['payment_method']
-                card = data['card']
-                details = data['details']
+        
+        data = json.loads(request.body)
+        paymentMethod = data['payment_method']
+        card = data['card']
+        details = data['details']
+        ################### Billing Address ###################
+        B_address_line1 = data['B_address_line1']
+        B_address_line2 = data['B_address_line2']
+        B_City = data['B_City']
+        B_State = data['B_State']
+        B_Postal_code = data['B_Postal_code']
+        B_Country = data['B_Country']
+        ################### Shipping Address ###################
+        C_address_line1 = data['C_address_line1']
+        C_address_line2 = data['C_address_line2']
+        C_City = data['C_City']
+        C_State = data['C_State']
+        C_Postal_code = data['C_Postal_code']
+        C_Country = data['C_Country']
+        ########################################
 
-                customer = stripe.Customer.create(
-                    payment_method=stripe.PaymentMethod.retrieve(
-                        paymentMethod),
-                    email=request.user.email,
-                    description='About Payment Plan',
-                    invoice_settings={
-                        'default_payment_method': paymentMethod
-                    }
-                )
-                stripe.PaymentMethod.attach(
-                paymentMethod,
-                customer=customer.id,
-                )
-                Payment_key.objects.create(user=request.user,name=details['name'],phone=details['phone'],email=details['email'],last4=card['last4'],exp_month=card['exp_month'],exp_year=card['exp_year'],payment_id=paymentMethod,default=True)
-                subscription = stripe.Subscription.create(
-                    customer=customer.id,
-                    items=[
-                        {
-                            'plan': 'plan_HFv9CmBmgpSKED',
-                        },
-                    ],
-                    expand=['latest_invoice.payment_intent'],
-                    # billing_cycle_anchor=datetime.now(),
+        customer = stripe.Customer.create(
+        payment_method=stripe.PaymentMethod.retrieve(paymentMethod),
+        email=request.user.email,
+        description='About Payment Plan',
+        phone=details['phone'],
+        name=details['name'],
+        address={
+            'line1':B_address_line1,
+            'line2':B_address_line2,
+            'city':B_City,
+            'state':B_State,
+            'postal_code':B_Postal_code,
+            'country':B_Country,
+            
+        },
+        shipping={
+            'name':details['name'],
+            'address':{'city':C_City,'line1':C_address_line1, 'line2':C_address_line2, 'country':C_Country,'postal_code':C_Postal_code, 'state':C_State,}
+        },
 
-                )
+        invoice_settings={
+                'default_payment_method': paymentMethod
+        }
+    )
+        stripe.PaymentMethod.attach(
+        paymentMethod,
+        customer=customer.id,
+        )
+        subscription = stripe.Subscription.create(
+        customer=customer.id,
+        items=[
+            {
+            'plan': 'plan_HFv9CmBmgpSKED',
+            },
+        ],
+        expand=['latest_invoice.payment_intent'],
+        # billing_cycle_anchor=datetime.now(),
 
-                # creating user object to be saved in database
-                Api_key.objects.create(user=request.user, paymentMenthod=paymentMethod, customer_Id=customer.id,
-                                       subscription_ID=subscription.id)
-                messages.success(request, "new method has been added.")
-                return redirect("edit_profile")
-        except Exception as e:
-            # print("***********************************")
-            # print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
-            # print("***********************************")
-            pass
+        )
+        
+        # creating user object to be saved in database
+        Api_key.objects.create(user=request.user,paymentMenthod=paymentMethod,customer_Id=customer.id,
+        subscription_ID=subscription.id)
+        Payment_key.objects.create(user=request.user,name=details['name'],phone=details['phone'],email=details['email'],last4=card['last4'],exp_month=card['exp_month'],exp_year=card['exp_year'],payment_id=paymentMethod,default=True)
 
     return render(request, 'payment/payment.html')
 
